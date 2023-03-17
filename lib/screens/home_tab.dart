@@ -7,6 +7,24 @@ class HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text("Home"),);
+    return Container(
+      child: Column(children: [
+        const SizedBox(
+          height: 10,
+          ),
+        Center(child: Column(children: [
+          Text("Balansas", style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, letterSpacing: 1.5), ), 
+          Text("\$" "2000", style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+          
+          ]
+        )
+        ),
+        const SizedBox(
+          height: 15,
+          width: 30,
+          ),
+      ],)
+     ); 
+    /*const Center(child: Text("Home"),);*/
   }
 }
