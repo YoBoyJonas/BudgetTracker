@@ -1,6 +1,8 @@
 import 'package:budget_tracker/screens/profile_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:budget_tracker/screens/Home_tab.dart';
+import 'package:budget_tracker/screens/add_tab.dart';
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -18,8 +20,10 @@ class _MainScreenState extends State<MainScreen> {
       case 1:
         return Container();
       case 2:
-        return Container();
+        return const AddTab();
       case 3:
+        return Container();
+      case 4:
         return ProfileTab();
       default:
         return const HomeTab();
@@ -36,6 +40,8 @@ class _MainScreenState extends State<MainScreen> {
                 icon: Icon(Icons.home), label: 'Pagrindinis'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.query_stats), label: 'Statistika'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.add), label: 'Pridėti'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.settings), label: 'Nustatymai'),
             BottomNavigationBarItem(
