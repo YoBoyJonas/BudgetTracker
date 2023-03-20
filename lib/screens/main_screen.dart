@@ -1,4 +1,5 @@
 import 'package:budget_tracker/screens/profile_tab.dart';
+import 'package:budget_tracker/screens/settings_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:budget_tracker/screens/Home_tab.dart';
 import 'package:budget_tracker/screens/add_tab.dart';
@@ -22,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
       case 2:
         return const AddTab();
       case 3:
-        return Container();
+        return const SettingsTab();
       case 4:
         return ProfileTab();
       default:

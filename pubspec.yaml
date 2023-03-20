@@ -10,7 +10,9 @@ dependencies:
   firebase_auth: ^4.3.0
   firebase_core: ^2.8.0
   flutter:
-    sdk: flutter
+    sdk: flutter 
+  hive_flutter: ^1.1.0
+  provider:
 
 dev_dependencies:
   flutter_test:

@@ -1,12 +1,13 @@
 import 'package:budget_tracker/datetime/date_time_helper.dart';
-import 'package:budget_tracker/models/expense_Item.dart';
+import 'package:budget_tracker/models/expense_item.dart';
 import 'package:flutter/widgets.dart';
 
-class ExpenseData{
+class ExpenseData extends ChangeNotifier{
   //list of ALL expenses
   List<ExpenseItem> overallExpenseList = [];
   //expense balance
   double expenseBalance = 0;
+  double incomeBalance = 0;
   //get expense list
   List<ExpenseItem> getAllExpenseList(){
     return overallExpenseList;
@@ -15,11 +16,22 @@ class ExpenseData{
   void addNewExpense(ExpenseItem newExpense){
     overallExpenseList.add(newExpense);
     expenseBalance += double.parse(newExpense.amount);
+
+    notifyListeners();
+  }
+
+    void addNewIncome(ExpenseItem newIncome){
+    overallExpenseList.add(newIncome);
+    incomeBalance += double.parse(newIncome.amount);
+
+    notifyListeners();
   }
 
   //delete expense
   void deleteExpense(ExpenseItem expense){
     overallExpenseList.remove(expense);
+
+    notifyListeners();
   }
   //get weekday from dateTime object
   String getDayName(DateTime dateTime){
