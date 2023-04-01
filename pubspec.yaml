@@ -11,6 +11,8 @@ dependencies:
   firebase_core: ^2.8.0
   flutter:
     sdk: flutter 
+  # Firebase firestore database
+  cloud_firestore: ^4.3.0
   hive_flutter: ^1.1.0
   provider:
 
