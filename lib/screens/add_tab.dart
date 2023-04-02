@@ -3,6 +3,7 @@ import 'package:budget_tracker/controllers/db_helper.dart';
 import 'package:budget_tracker/models/expense_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:budget_tracker/data/income_expense_data.dart';
@@ -16,6 +17,9 @@ class AddTab extends StatefulWidget {
 }
 
 class _AddTabState extends State<AddTab> {
+  final GlobalKey<FormFieldState> formFieldKey = GlobalKey();
+    final GlobalKey<FormFieldState> formFieldKey2 = GlobalKey();
+
   // text controllers
   final newExpenseNameController = TextEditingController();
   final newExpenseAmountController = TextEditingController();
@@ -33,7 +37,8 @@ class _AddTabState extends State<AddTab> {
           children: [
           
           //expense name
-          TextField(
+          TextFormField(
+            key: formFieldKey,
             controller: newExpenseNameController,
             decoration: const InputDecoration(
               border: OutlineInputBorder(
@@ -41,19 +46,34 @@ class _AddTabState extends State<AddTab> {
               ),
               labelText: 'Kategorija'
             ),
+            validator: (text){
+              if (text == null || text.isEmpty){
+                return 'Pasirinkite kategoriją';
+              }
+              return null;
+            },
           ),
 
           const Padding(padding: EdgeInsets.all(6.0)),
           //expense amount
-          TextField(
+          TextFormField(
+            key: formFieldKey2,
             controller: newExpenseAmountController,
             keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
             decoration: const InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
               ),
-              labelText: 'Kaina'
+              labelText: 'Kaina',
             ),
+
+            validator: (text){
+              if (text == null || text.isEmpty){
+                return 'Įveskite sumą';
+              }
+              return null;
+            },
           ),
         ],),
         actions:[
@@ -71,10 +91,10 @@ class _AddTabState extends State<AddTab> {
       ),
       );
   }
-
   //save
   void save(){
-    ExpenseItem newExpense = ExpenseItem (
+    if (formFieldKey.currentState!.validate() && formFieldKey2.currentState!.validate()) {
+      ExpenseItem newExpense = ExpenseItem (
       name: newExpenseNameController.text,
       amount: newExpenseAmountController.text,
       dateTime: DateTime.now(),
@@ -93,8 +113,8 @@ class _AddTabState extends State<AddTab> {
 
     Navigator.pop(context);
     clear();
+    }
   }
-
 
   void addNewIncome(String mainText){
     showDialog(
@@ -105,7 +125,8 @@ class _AddTabState extends State<AddTab> {
           mainAxisSize: MainAxisSize.min,
           children: [       
           //income name
-          TextField(
+          TextFormField(
+            key: formFieldKey,
             controller: newIncomeNameController,
               decoration: const InputDecoration(
               border: OutlineInputBorder(
@@ -113,20 +134,38 @@ class _AddTabState extends State<AddTab> {
               ),
               labelText: 'Kategorija'
             ),
+
+            validator: (text){
+              if (text == null || text.isEmpty){
+                return 'Pasirinkite kategoriją';
+              }
+              return null;
+            },
+
           ),
 
           const Padding(padding: EdgeInsets.all(6.0)),
 
           //income amount
-          TextField(
+          TextFormField(
+            key: formFieldKey2,
             controller: newIncomeAmountController,
             keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
               decoration: const InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
               ),
               labelText: 'Gautos pajamos'
             ),
+
+            validator: (text){
+              if (text == null || text.isEmpty){
+                return 'Įveskite pajamas';
+              }
+              return null;
+            },
+
           ),
         ],),
         actions:[
@@ -147,24 +186,26 @@ class _AddTabState extends State<AddTab> {
 
   void saveIncome() 
   {
-    ExpenseItem newIncome = ExpenseItem (
-      name: newIncomeNameController.text,
-      amount: newIncomeAmountController.text,
-      dateTime: DateTime.now(),
-      type: 'Income'
-    );
-    //adds income to firestore database
-    createExpense(item: newIncome);
-    if (double.parse(newIncomeAmountController.text) >= 0)
-    {
-      DbHelper dbHelper = DbHelper();
-       dbHelper.addData(double.parse(newIncomeAmountController.text), 'Income');      
+    if (formFieldKey.currentState!.validate() && formFieldKey2.currentState!.validate()) {
+      ExpenseItem newIncome = ExpenseItem (
+        name: newIncomeNameController.text,
+        amount: newIncomeAmountController.text,
+        dateTime: DateTime.now(),
+        type: 'Income'
+      );
+      //adds income to firestore database
+      createExpense(item: newIncome);
+      if (double.parse(newIncomeAmountController.text) >= 0)
+      {
+        DbHelper dbHelper = DbHelper();
+        dbHelper.addData(double.parse(newIncomeAmountController.text), 'Income');      
+      }
+      
+      Provider.of<ExpenseData>(context, listen: false).addNewExpense(newIncome);
+      Navigator.pop(context);
+      
+      clearIncomeControllers();
     }
-    
-    Provider.of<ExpenseData>(context, listen: false).addNewExpense(newIncome);
-    Navigator.pop(context);
-    
-    clearIncomeControllers();
   }
 
   //cancel
