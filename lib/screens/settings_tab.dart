@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SettingsTab extends StatelessWidget {
   const SettingsTab({super.key});
@@ -30,9 +31,20 @@ class SettingsTab extends StatelessWidget {
 
 
   void removeDBData() async{
+    try{
     if (await Hive.boxExists('money')){
       await Hive.deleteFromDisk();
       await Hive.openBox('money');
     }
+    
+    } on Exception{print('klaida');}
+    
+    //deletes all data frome firestore database
+    var collection = FirebaseFirestore.instance.collection('income_expense');
+    var snapshots = await collection.get();
+    for (var doc in snapshots.docs) {
+      await doc.reference.delete();
+    }
+    //---------------------------------------
   }
 }

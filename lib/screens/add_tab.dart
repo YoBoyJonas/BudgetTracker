@@ -7,8 +7,6 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:budget_tracker/data/income_expense_data.dart';
 import 'package:provider/provider.dart';
-//firestore database
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddTab extends StatefulWidget {
   const AddTab({super.key});
@@ -81,14 +79,13 @@ class _AddTabState extends State<AddTab> {
       dateTime: DateTime.now(),
       type: 'Expense',
     );
-
+    //adds expense to firestore database
     createExpense(item: newExpense);
 
     if (double.parse(newExpenseAmountController.text) >= 0)
     {
       DbHelper dbHelper = DbHelper();
       dbHelper.addData(double.parse(newExpenseAmountController.text), 'Expense');
-      createExpense(item: newExpense);
     }
 
     Provider.of<ExpenseData>(context, listen: false).addNewExpense(newExpense);
@@ -154,16 +151,17 @@ class _AddTabState extends State<AddTab> {
       dateTime: DateTime.now(),
       type: 'Income'
     );
+    //adds income to firestore database
     createExpense(item: newIncome);
     if (double.parse(newIncomeAmountController.text) >= 0)
     {
       DbHelper dbHelper = DbHelper();
        dbHelper.addData(double.parse(newIncomeAmountController.text), 'Income');      
     }
-    createExpense(item: newIncome);
+    
     Provider.of<ExpenseData>(context, listen: false).addNewExpense(newIncome);
     Navigator.pop(context);
-    createExpense(item: newIncome);
+    
     clearIncomeControllers();
   }
 
@@ -259,13 +257,14 @@ class _AddTabState extends State<AddTab> {
 
   //adds expense to firestore database
   Future createExpense({required ExpenseItem item}) async {
-    final docLedger = FirebaseFirestore.instance.collection('expensesCollection').doc('my-expenses');
-
+    
+    final docLedger = FirebaseFirestore.instance.collection('income_expense').doc();
+   
     final json = {
       'name': item.name,
       'amount': item.amount,
-      'date': item.dateTime,
-      'type': item.type,
+      'dateTime': item.dateTime,
+      'type': item.type
     };
 
     await docLedger.set(json);
