@@ -47,6 +47,7 @@ class _AddTabState extends State<AddTab> {
           //expense amount
           TextField(
             controller: newExpenseAmountController,
+            keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -119,6 +120,7 @@ class _AddTabState extends State<AddTab> {
           //income amount
           TextField(
             controller: newIncomeAmountController,
+            keyboardType: TextInputType.number,
               decoration: const InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
