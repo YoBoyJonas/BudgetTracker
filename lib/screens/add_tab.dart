@@ -17,6 +17,8 @@ class AddTab extends StatefulWidget {
 }
 
 class _AddTabState extends State<AddTab> {
+  String selectedCategory = "0";
+
   final GlobalKey<FormFieldState> formFieldKey = GlobalKey();
     final GlobalKey<FormFieldState> formFieldKey2 = GlobalKey();
 
@@ -37,23 +39,115 @@ class _AddTabState extends State<AddTab> {
           children: [
           
           //expense name
-          TextFormField(
-            key: formFieldKey,
-            controller: newExpenseNameController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30)),               
+          Row(
+            children: [
+              SizedBox(
+                width: 170.0,
+                child: TextFormField(
+                  key: formFieldKey,
+                  controller: newExpenseNameController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(30)),               
+                    ),
+                    labelText: 'Kategorija'
+                  ),
+                  validator: (text){
+                    if (text == null || text.isEmpty){
+                      return 'Pasirinkite kategoriją';
+                    }
+                    return null;
+                  },
+                ),
               ),
-              labelText: 'Kategorija'
-            ),
-            validator: (text){
-              if (text == null || text.isEmpty){
-                return 'Pasirinkite kategoriją';
-              }
-              return null;
-            },
+
+            const SizedBox(width: 20),
+
+                  Flexible(child: Container(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                  
+                      child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection('income_expense').snapshots(),
+                  
+                      builder: (context, snapshot) {
+                        List<DropdownMenuItem> expenseItems = [];
+                  
+                        if (!snapshot.hasData){
+                          const CircularProgressIndicator();
+                        }
+                        else {
+                          final categories = snapshot.data?.docs.reversed.toList();
+                  
+                          expenseItems.add(const DropdownMenuItem(
+                            value: "0",
+                            child: Text('Kategorija'),
+                            ),
+                          );
+
+                          for (var category in categories!){                            
+                              if (category['type'] == "Expense"){
+                                int counter =0;
+                                for(var expense in expenseItems){
+
+                                  if ((expense.child as Text).data!.toLowerCase == category['name'].toLowerCase()){break;}
+                                  else if ((expense.child as Text).data!.toLowerCase() != category['name'].toLowerCase()){counter++;}
+
+                                  if (counter == expenseItems.length){
+                                    var nameText = category['name'].toString().toUpperCase();
+                                    expenseItems.add(DropdownMenuItem(
+                                      value: category.id,
+                                      child: Text(
+                                        nameText,
+                                        style: const TextStyle(color: Colors.red, letterSpacing: 0.25, fontWeight: FontWeight.bold),
+                                      )                        
+                                      )  
+                                      );
+
+                                      createExpenseCategories(item: nameText);
+                                      break;
+                                  }
+                                }
+                            }
+                          }
+                        }
+                        return StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance.collection('expense_categories').snapshots(),
+                  
+                          builder: (context, snapshot){
+                          return DropdownButton(
+                          items: expenseItems,
+                          onChanged: (categoryValue) async{
+                            var collection = FirebaseFirestore.instance.collection('income_expense');
+                            var docSnapshot = await collection.doc(categoryValue).get();
+                            Map<String, dynamic>? data = docSnapshot.data();
+
+                            if (categoryValue == "0"){
+                              newExpenseNameController.text = "";
+                            }
+                            else{
+                              newExpenseNameController.text = data?['name'].toUpperCase();
+                            }
+
+                            setState(() {
+                              selectedCategory = categoryValue;
+                            });
+                        },
+                        value: selectedCategory,
+                        isExpanded: false,
+                        );
+                          }           
+                      );
+                        
+                      }
+                    ),
+                    ),
+                  )),
+            ],
+
           ),
 
+      
           const Padding(padding: EdgeInsets.all(6.0)),
           //expense amount
           TextFormField(
@@ -75,6 +169,8 @@ class _AddTabState extends State<AddTab> {
               return null;
             },
           ),
+
+
         ],),
         actions:[
           //save button
@@ -95,7 +191,7 @@ class _AddTabState extends State<AddTab> {
   void save(){
     if (formFieldKey.currentState!.validate() && formFieldKey2.currentState!.validate()) {
       ExpenseItem newExpense = ExpenseItem (
-      name: newExpenseNameController.text,
+      name: newExpenseNameController.text.toUpperCase(),
       amount: newExpenseAmountController.text,
       dateTime: DateTime.now(),
       type: 'Expense',
@@ -119,67 +215,160 @@ class _AddTabState extends State<AddTab> {
   void addNewIncome(String mainText){
     showDialog(
       context: context, 
-      builder: (context) => AlertDialog(
-        title: Text(mainText),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [       
-          //income name
-          TextFormField(
-            key: formFieldKey,
-            controller: newIncomeNameController,
-              decoration: const InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text(mainText),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [       
+              //income name
+              Row(
+                children: [
+                  SizedBox(
+                    width: 170,
+                    child: TextFormField(
+                      key: formFieldKey,
+                      controller: newIncomeNameController,
+                        decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                        labelText: 'Kategorija',
+                      ),
+                  
+                      validator: (text){
+                        if (text == null || text.isEmpty){
+                          return 'Pasirinkite kategoriją';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(width: 20),
+
+                  Flexible(child: Container(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                  
+                      child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection('income_expense').snapshots(),
+                  
+                      builder: (context, snapshot) {
+                        List<DropdownMenuItem> incomeItems = [];
+                  
+                        if (!snapshot.hasData){
+                          const CircularProgressIndicator();
+                        }
+                        else {
+                          final categories = snapshot.data?.docs.reversed.toList();
+                  
+                          incomeItems.add(const DropdownMenuItem(
+                            value: "0",
+                            child: Text('Kategorija'),
+                            ),
+                          );
+
+                          for (var category in categories!){                            
+                              if (category['type'] == "Income"){
+                                int counter =0;
+                                for(var income in incomeItems){
+
+                                  if ((income.child as Text).data!.toLowerCase == category['name'].toLowerCase()){break;}
+                                  else if ((income.child as Text).data!.toLowerCase() != category['name'].toLowerCase()){counter++;}
+
+                                  if (counter == incomeItems.length){
+                                    var nameText = category['name'].toString().toUpperCase();
+                                    incomeItems.add(DropdownMenuItem(
+                                      value: category.id,
+                                      child: Text(
+                                        nameText,
+                                        style: const TextStyle(color: Colors.green, letterSpacing: 0.25, fontWeight: FontWeight.bold),
+                                      )                        
+                                      )  
+                                      );
+
+                                      createIncomeCategories(item: nameText);
+                                      break;
+                                  }
+                                }
+                            }
+                          }
+                        }
+                        return StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance.collection('income_categories').snapshots(),
+                  
+                          builder: (context, snapshot){
+                          return DropdownButton(
+                          items: incomeItems,
+                          onChanged: (categoryValue) async{
+                            var collection = FirebaseFirestore.instance.collection('income_expense');
+                            var docSnapshot = await collection.doc(categoryValue).get();
+                            Map<String, dynamic>? data = docSnapshot.data();
+
+                            if (categoryValue == "0"){
+                              newIncomeNameController.text = "";
+                            }
+                            else{
+                              newIncomeNameController.text = data?['name'].toUpperCase();
+                            }
+
+                            setState(() {
+                              selectedCategory = categoryValue;
+                            });
+                        },
+                        value: selectedCategory,
+                        isExpanded: false,
+                        );
+                          }           
+                      );
+                        
+                      }
+                    ),
+                    ),
+                  ))
+                ],     
               ),
-              labelText: 'Kategorija'
-            ),
 
-            validator: (text){
-              if (text == null || text.isEmpty){
-                return 'Pasirinkite kategoriją';
-              }
-              return null;
-            },
+              const Padding(padding: EdgeInsets.all(6.0)),
 
-          ),
-
-          const Padding(padding: EdgeInsets.all(6.0)),
-
-          //income amount
-          TextFormField(
-            key: formFieldKey2,
-            controller: newIncomeAmountController,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
-              decoration: const InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
+              TextFormField(
+              key: formFieldKey2,
+              controller: newIncomeAmountController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+                decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                ),
+                labelText: 'Gautos pajamos'
               ),
-              labelText: 'Gautos pajamos'
-            ),
-
-            validator: (text){
-              if (text == null || text.isEmpty){
-                return 'Įveskite pajamas';
-              }
-              return null;
-            },
-
-          ),
-        ],),
-        actions:[
-          //save button
-          MaterialButton(
-            onPressed: saveIncome, 
-            child: const Text ('Išsaugoti'),          
-          ),
-          // cancel button
-          MaterialButton(
-            onPressed: cancelIncome,
-            child: const Text ('Atmesti'),
-          ),
-        ],
+              
+              validator: (text){
+                if (text == null || text.isEmpty){
+                  return 'Įveskite pajamas';
+                }
+                return null;
+              },
+              
+              ),
+              //income amount      
+            ],),
+            actions:[
+              //save button
+              MaterialButton(
+                onPressed: saveIncome, 
+                child: const Text ('Išsaugoti'),          
+              ),
+              // cancel button
+              MaterialButton(
+                onPressed: cancelIncome,
+                child: const Text ('Atmesti'),
+              ),
+            ],
+          );
+        }
       ),
       );
   }
@@ -188,7 +377,7 @@ class _AddTabState extends State<AddTab> {
   {
     if (formFieldKey.currentState!.validate() && formFieldKey2.currentState!.validate()) {
       ExpenseItem newIncome = ExpenseItem (
-        name: newIncomeNameController.text,
+        name: newIncomeNameController.text.toUpperCase(),
         amount: newIncomeAmountController.text,
         dateTime: DateTime.now(),
         type: 'Income'
@@ -213,24 +402,28 @@ class _AddTabState extends State<AddTab> {
 
     Navigator.pop(context);
     clear();
+    selectedCategory = "0";
   }
 
   void clear()
   {
     newExpenseNameController.clear();
     newExpenseAmountController.clear();
+    selectedCategory = "0";
   }
 
   void cancelIncome(){
 
     Navigator.pop(context);
     clearIncomeControllers();
+    selectedCategory = "0";
   }
 
   void clearIncomeControllers()
   {
     newIncomeNameController.clear();
     newIncomeAmountController.clear();
+    selectedCategory = "0";
   }
 
 
@@ -251,6 +444,7 @@ class _AddTabState extends State<AddTab> {
                 ), 
               ),
 
+              
 
               Center(child: Row(children: <Widget>[
                 //Opens expenses page  
@@ -308,6 +502,28 @@ class _AddTabState extends State<AddTab> {
       'amount': item.amount,
       'dateTime': item.dateTime,
       'type': item.type
+    };
+
+    await docLedger.set(json);
+  }
+
+    Future createIncomeCategories({required String item}) async {
+    
+    final docLedger = FirebaseFirestore.instance.collection('income_categories').doc();
+   
+    final json = {
+      'categories': item,
+    };
+
+    await docLedger.set(json);
+  }
+
+      Future createExpenseCategories({required String item}) async {
+    
+    final docLedger = FirebaseFirestore.instance.collection('expense_categories').doc();
+   
+    final json = {
+      'categories': item,
     };
 
     await docLedger.set(json);
