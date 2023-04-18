@@ -32,8 +32,10 @@ class _AddTabState extends State<AddTab> {
   void addNewExpense(String mainText){
     showDialog(
       context: context, 
-      builder: (context) => AlertDialog(
-        title: Text(mainText),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState){
+          return AlertDialog(
+                    title: Text(mainText),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -98,8 +100,10 @@ class _AddTabState extends State<AddTab> {
                                     expenseItems.add(DropdownMenuItem(
                                       value: category.id,
                                       child: Text(
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                         nameText,
-                                        style: const TextStyle(color: Colors.red, letterSpacing: 0.25, fontWeight: FontWeight.bold),
+                                        style: const TextStyle(color: Colors.red, letterSpacing: 0.25, fontWeight: FontWeight.bold, fontSize: 12),
                                       )                        
                                       )  
                                       );
@@ -134,7 +138,7 @@ class _AddTabState extends State<AddTab> {
                             });
                         },
                         value: selectedCategory,
-                        isExpanded: false,
+                        isExpanded: true,
                         );
                           }           
                       );
@@ -184,7 +188,8 @@ class _AddTabState extends State<AddTab> {
             child: const Text ('Atmesti'),
           ),
         ],
-      ),
+          );
+        })
       );
   }
   //save
@@ -251,7 +256,6 @@ class _AddTabState extends State<AddTab> {
                   Flexible(child: Container(
                     alignment: Alignment.centerRight,
                     child: SizedBox(
-                  
                       child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance.collection('income_expense').snapshots(),
                   
@@ -280,11 +284,13 @@ class _AddTabState extends State<AddTab> {
 
                                   if (counter == incomeItems.length){
                                     var nameText = category['name'].toString().toUpperCase();
-                                    incomeItems.add(DropdownMenuItem(
+                                    incomeItems.add(DropdownMenuItem(      
                                       value: category.id,
-                                      child: Text(
+                                      child: Text(      
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,                             
                                         nameText,
-                                        style: const TextStyle(color: Colors.green, letterSpacing: 0.25, fontWeight: FontWeight.bold),
+                                        style: const TextStyle(color: Colors.green, letterSpacing: 0.25, fontWeight: FontWeight.bold, fontSize: 12),
                                       )                        
                                       )  
                                       );
@@ -319,7 +325,7 @@ class _AddTabState extends State<AddTab> {
                             });
                         },
                         value: selectedCategory,
-                        isExpanded: false,
+                        isExpanded: true,
                         );
                           }           
                       );

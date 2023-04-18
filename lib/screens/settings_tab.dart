@@ -69,6 +69,7 @@ class _SettingsTabState extends State<SettingsTab> {
                                             DropdownMenuItem(
                                               value: category.id,
                                               child: Text(
+                                                overflow: TextOverflow.ellipsis,
                                                 nameText,
                                                 style: const TextStyle(color: Colors.green, letterSpacing: 0.25, fontWeight: FontWeight.bold),
                                               )                        
@@ -81,6 +82,7 @@ class _SettingsTabState extends State<SettingsTab> {
                                                 DropdownMenuItem(
                                                   value: category.id,
                                                   child: Text(
+                                                    overflow: TextOverflow.ellipsis,
                                                     nameText,
                                                     style: const TextStyle(color: Colors.red, letterSpacing: 0.25, fontWeight: FontWeight.bold),
                                                   )                        
@@ -102,7 +104,7 @@ class _SettingsTabState extends State<SettingsTab> {
                                   });
                                 },
                               value: selectedCategory,
-                              isExpanded: false,
+                              isExpanded: true,
                               );
                       }
                       
@@ -114,6 +116,7 @@ class _SettingsTabState extends State<SettingsTab> {
                     IconButton(
                       onPressed: (){
                         var collection = FirebaseFirestore.instance.collection('income_expense');
+
                         collection
                           .doc(selectedCategory)
                           .delete();
