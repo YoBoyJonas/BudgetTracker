@@ -3,6 +3,7 @@ import 'package:budget_tracker/controllers/db_helper.dart';
 import 'package:budget_tracker/models/expense_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -435,8 +436,14 @@ class _AddTabState extends State<AddTab> {
 
   @override
   Widget build(BuildContext context) {  
-    return Consumer<ExpenseData>(  
-        builder:(context, valueExpense, child) => Scaffold(         
+    return MaterialApp(
+      home: Stack(
+        children: [
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Consumer<ExpenseData>(  
+        builder:(context, valueExpense, child) => Scaffold(   
+          backgroundColor: Colors.transparent,      
           body: Column(
             children:[
               Expanded(
@@ -495,7 +502,10 @@ class _AddTabState extends State<AddTab> {
           )
     ) 
      
-    ); 
+    )
+          ),
+        ],),
+    );
   }
 
   //adds expense to firestore database

@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class ProfileTab extends StatefulWidget {
-  ProfileTab({Key? key}) : super(key: key);
+  const ProfileTab({Key? key}) : super(key: key);
 
   @override
   State<ProfileTab> createState() => _ProfileTabState();
@@ -36,7 +36,7 @@ class _ProfileTabState extends State<ProfileTab> {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               "Email: ${userAuth?.email}",
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             )),
         // Creation date from Firebase auth
         Padding(
@@ -44,7 +44,7 @@ class _ProfileTabState extends State<ProfileTab> {
             child: Text(
               // may run into a crash. TODO: find alternative to question mark syntax
               "Created: ${DateFormat('yyyy-MM-dd').format(userAuth?.metadata.creationTime as DateTime)}",
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             )),
         // Additional custom user fields
         FutureBuilder(
@@ -60,14 +60,14 @@ class _ProfileTabState extends State<ProfileTab> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       "Nickname: ${_nickNameController.text}",
-                      style: TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20),
                     )),
               ],
             );
           },
         ),
         ElevatedButton(
-          child: Text("Koreguoti"),
+          child: const Text("Koreguoti"),
           onPressed: () {
             _userEditBottomSheet(context);
           },
@@ -104,10 +104,10 @@ class _ProfileTabState extends State<ProfileTab> {
                     // Header view with cancel button
                     Row(
                       children: <Widget>[
-                        Text("Atnaujinti profilį"),
-                        Spacer(),
+                        const Text("Atnaujinti profilį"),
+                        const Spacer(),
                         IconButton(
-                          icon: Icon(Icons.cancel),
+                          icon: const Icon(Icons.cancel),
                           color: Colors.orange,
                           iconSize: 25,
                           onPressed: () {
@@ -124,7 +124,7 @@ class _ProfileTabState extends State<ProfileTab> {
                             padding: const EdgeInsets.only(right: 15.0),
                             child: TextField(
                               controller: _nickNameController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 helperText: "Nickname",
                               ),
                             ),
@@ -137,7 +137,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         ElevatedButton(
-                          child: Text('Išsaugoti'),
+                          child: const Text('Išsaugoti'),
                           onPressed: () async {
                             userModel.nickName = _nickNameController.text;
                             // setstate updates displayed nickname/profile info after clicking 'Išsaugoti'

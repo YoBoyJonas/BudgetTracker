@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       }
                   },
-                  decoration: InputDecoration(border: OutlineInputBorder(),hintText: "E-mail"),
+                  decoration: const InputDecoration(border: OutlineInputBorder(),hintText: "E-mail"),
                 ),
               ),
               //password text field
@@ -123,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       }
                   },
-                  decoration: InputDecoration(border: OutlineInputBorder(),hintText: "Password"),
+                  decoration: const InputDecoration(border: OutlineInputBorder(),hintText: "Password"),
                 ),
               ),
               // password strength bar

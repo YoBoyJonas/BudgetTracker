@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:budget_tracker/screens/Home_tab.dart';
 import 'package:budget_tracker/screens/add_tab.dart';
 
+import 'package:budget_tracker/globals/globals.dart' as globals;
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -14,6 +16,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   var currentIndex = 0;
+
   Widget buildTabContent(int index) {
     switch (index) {
       case 0:
@@ -25,16 +28,28 @@ class _MainScreenState extends State<MainScreen> {
       case 3:
         return const SettingsTab();
       case 4:
-        return ProfileTab();
+        return const ProfileTab();
       default:
         return const HomeTab();
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: buildTabContent(currentIndex),
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: globals.bg[globals.backgroundIndex], fit: BoxFit.cover)
+            ),
+          ),
+          buildTabContent(currentIndex),
+      ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
