@@ -4,6 +4,7 @@ import 'package:budget_tracker/data/income_expense_data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -34,12 +35,20 @@ class _HomeTabState extends State<HomeTab> {
                   }
                   final userSnapshot = snapshot.data?.docs;
                   double tempBalance = 0;
+                  //gets todays date
+                  var todaysDate = DateTime.now();
+                  //formats it into months
+                  final todaysMonth = formatDate(todaysDate, [mm]);
                   if (userSnapshot!.isNotEmpty) {
                     for (var doc in userSnapshot) {
-                      if(doc["type"] == 'Income'){
+                      //gets date from document
+                      var date = doc["dateTime"].toDate();
+                      final month = formatDate(date, [mm]);
+                      //checks if data from document is from this month
+                      if(doc["type"] == 'Income' && month == todaysMonth){
                         tempBalance += double.parse(doc["amount"]);
                       }
-                      else{
+                      else if(doc["type"] == 'Expense' && month == todaysMonth){
                         tempBalance -= double.parse(doc["amount"]);
                       }
                     }
