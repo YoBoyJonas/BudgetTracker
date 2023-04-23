@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
 
 
@@ -16,6 +16,8 @@ class SettingsTab extends StatefulWidget {
 
 class _SettingsTabState extends State<SettingsTab> {
 String selectedCategory = "0";
+//current users UID
+  final uid = FirebaseAuth.instance.currentUser!.uid;
 
 @override
 Widget build(BuildContext context) {
@@ -236,7 +238,7 @@ void removeDBData() async{
     }}
     
     //deletes all data frome firestore database
-    var collection = FirebaseFirestore.instance.collection('income_expense');
+    var collection = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense');
     var snapshots = await collection.get();
     for (var doc in snapshots.docs) {
       await doc.reference.delete();

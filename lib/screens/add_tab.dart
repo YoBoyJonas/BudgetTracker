@@ -2,6 +2,7 @@ import 'package:budget_tracker/components/expense_tile.dart';
 import 'package:budget_tracker/controllers/db_helper.dart';
 import 'package:budget_tracker/models/expense_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,8 @@ class AddTab extends StatefulWidget {
 
 class _AddTabState extends State<AddTab> {
   String selectedCategory = "0";
+  //current users UID
+  final uid = FirebaseAuth.instance.currentUser!.uid;
 
   final GlobalKey<FormFieldState> formFieldKey = GlobalKey();
     final GlobalKey<FormFieldState> formFieldKey2 = GlobalKey();
@@ -446,18 +449,28 @@ class _AddTabState extends State<AddTab> {
           backgroundColor: Colors.transparent,      
           body: Column(
             children:[
-              Expanded(
-                child:  ListView.builder(
-                  itemCount: valueExpense.getAllExpenseList().length,
-                  itemBuilder: (context, index) => ExpenseTile(
-                    name: valueExpense.getAllExpenseList()[index].name,
-                    amount: valueExpense.getAllExpenseList()[index].amount, 
-                    dateTime: valueExpense.getAllExpenseList()[index].dateTime,
-                    type: valueExpense.getAllExpenseList()[index].type)             
-                ), 
-              ),
 
-              
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense').snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  final userSnapshot = snapshot.data?.docs;
+                  if (userSnapshot!.isEmpty) {
+                    return const Text("no data");
+                  }
+                  return Expanded ( child: ListView.builder(
+                      scrollDirection: Axis.vertical, 
+                      itemCount: userSnapshot.length,
+                      itemBuilder: (context, index) => ExpenseTile(
+                        name: userSnapshot[index]["name"],
+                        amount: userSnapshot[index]["amount"], 
+                        dateTime: userSnapshot[index]["dateTime"].toDate(),
+                        type: userSnapshot[index]["type"]), ),
+                  );
+                }
+              ),
 
               Center(child: Row(children: <Widget>[
                 //Opens expenses page  
@@ -511,7 +524,7 @@ class _AddTabState extends State<AddTab> {
   //adds expense to firestore database
   Future createExpense({required ExpenseItem item}) async {
     
-    final docLedger = FirebaseFirestore.instance.collection('income_expense').doc();
+    final docLedger = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense').doc();
    
     final json = {
       'name': item.name,
@@ -525,10 +538,10 @@ class _AddTabState extends State<AddTab> {
 
     Future createIncomeCategories({required String item}) async {
     
-    final docLedger = FirebaseFirestore.instance.collection('income_categories').doc();
+    final docLedger = FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Income_Categories').doc();
    
     final json = {
-      'categories': item,
+      'category': item,
     };
 
     await docLedger.set(json);
@@ -536,10 +549,10 @@ class _AddTabState extends State<AddTab> {
 
       Future createExpenseCategories({required String item}) async {
     
-    final docLedger = FirebaseFirestore.instance.collection('expense_categories').doc();
+    final docLedger = FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').doc();
    
     final json = {
-      'categories': item,
+      'category': item,
     };
 
     await docLedger.set(json);

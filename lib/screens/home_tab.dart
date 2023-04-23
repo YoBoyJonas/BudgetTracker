@@ -2,6 +2,8 @@ import 'dart:ffi';
 import 'package:budget_tracker/controllers/db_helper.dart';
 import 'package:budget_tracker/data/income_expense_data.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -13,18 +15,8 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   DbHelper dbHelper = DbHelper();
   double totalBalance = 0;
-  
-
-  getTotalBalance(Map entireData){
-    totalBalance = 0;
-    entireData.forEach((key, value) {
-      if (value['type'] == "Income"){
-        totalBalance += (value['amount'] as double);
-      } else{
-        totalBalance -= (value['amount'] as double);
-      }
-    });
-  }
+  //current users UID
+  final uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +25,26 @@ class _HomeTabState extends State<HomeTab> {
         children: [
           Scaffold(
             backgroundColor: Colors.transparent,
-            body: FutureBuilder<Map>(
-              future: dbHelper.fetch(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError){
-                  return const Center(child: Text("Unexpected Error !"),);
-                }
-                if (snapshot.hasData){
-                  getTotalBalance(snapshot.data!);
+            body: 
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense').snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  final userSnapshot = snapshot.data?.docs;
+                  double tempBalance = 0;
+                  if (userSnapshot!.isNotEmpty) {
+                    for (var doc in userSnapshot) {
+                      if(doc["type"] == 'Income'){
+                        tempBalance += double.parse(doc["amount"]);
+                      }
+                      else{
+                        tempBalance -= double.parse(doc["amount"]);
+                      }
+                    }
+                  }
+                  totalBalance = tempBalance;
                   return ListView(
                     children:[
                       Padding(
@@ -71,14 +75,17 @@ class _HomeTabState extends State<HomeTab> {
                                   ),
                                 ),
                                 Text(
-                                  '$totalBalance \$',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                                    '$totalBalance \$',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
                                     fontSize: 26.0,
                                     color: Colors.amber,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                
+                                
+                                
                       
                               ],
                             ),
@@ -87,14 +94,9 @@ class _HomeTabState extends State<HomeTab> {
                       ),
                     ]
                   );
-                }else {
-                  return const Center(
-                    child: Text("Unexpected Error !"),
-                  );
                 }
+              ),
               
-              },
-            ),
     ),
         ],
       )
