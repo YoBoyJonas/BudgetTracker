@@ -4,6 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:budget_tracker/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:budget_tracker/storage_service.dart';
+import 'dart:io';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({Key? key}) : super(key: key);
@@ -14,8 +17,10 @@ class ProfileTab extends StatefulWidget {
 
 class _ProfileTabState extends State<ProfileTab> {
   final User? userAuth = Auth().currentUser;
-  UserModel userModel = UserModel(nickName: "");
+  UserModel userModel = UserModel(nickName: "", imageUrl: "");
   final TextEditingController _nickNameController = TextEditingController();
+  final Storage storage = Storage();
+  File? _image;
 
   @override
   Widget build(BuildContext context) {
@@ -28,53 +33,102 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
+  Future<void> _pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final uid = userAuth?.uid;
+      final fileExtension = pickedFile.path.split('.').last;
+      final fileName = "$uid.$fileExtension";
+      String imageUrl = await storage.uploadFile(pickedFile.path, fileName);
+      setState(() {
+        _image = File(pickedFile.path);
+        userModel.imageUrl = imageUrl;
+      });
+
+      // Update imageUrl in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .set(userModel.toJson());
+    }
+  }
+
+  Widget showProfileImage() {
+    return GestureDetector(
+      onTap: () {
+        _pickImage();
+      },
+      child: CircleAvatar(
+        radius: 100,
+        backgroundColor: Colors.white,
+        child: CircleAvatar(
+          radius: 95,
+          backgroundImage: userModel.imageUrl != ""
+              ? NetworkImage(userModel.imageUrl)
+              : AssetImage('assets/images/default_profile.png')
+                  as ImageProvider<Object>,
+          backgroundColor: Colors.green,
+        ),
+      ),
+    );
+  }
+
   Widget displayUserInformation() {
-    return Column(
-      children: <Widget>[
-        // Email from Firebase auth
-        Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Email: ${userAuth?.email}",
-              style: const TextStyle(fontSize: 20),
-            )),
-        // Creation date from Firebase auth
-        Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              // may run into a crash. TODO: find alternative to question mark syntax
-              "Created: ${DateFormat('yyyy-MM-dd').format(userAuth?.metadata.creationTime as DateTime)}",
-              style: const TextStyle(fontSize: 20),
-            )),
-        // Additional custom user fields
-        FutureBuilder(
-          future: _getProfileData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              _nickNameController.text = userModel.nickName;
-            }
+    return FutureBuilder(
+        future: _getProfileData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            _nickNameController.text = userModel.nickName;
 
             return Column(
               children: <Widget>[
+                showProfileImage(),
+                // Email from Firebase auth
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Email: ${userAuth?.email}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        backgroundColor: Colors.orangeAccent,
+                      ),
+                    )),
+                // Creation date from Firebase auth
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      // may run into a crash. TODO: find alternative to question mark syntax
+                      "Created: ${DateFormat('yyyy-MM-dd').format(userAuth?.metadata.creationTime as DateTime)}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        backgroundColor: Colors.orangeAccent,
+                      ),
+                    )),
+                // Additional custom user fields
                 Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       "Nickname: ${_nickNameController.text}",
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        backgroundColor: Colors.orangeAccent,
+                      ),
                     )),
+                ElevatedButton(
+                  child: const Text("Koreguoti"),
+                  onPressed: () {
+                    _userEditBottomSheet(context);
+                  },
+                ),
+                _signOutButton(),
               ],
             );
-          },
-        ),
-        ElevatedButton(
-          child: const Text("Koreguoti"),
-          onPressed: () {
-            _userEditBottomSheet(context);
-          },
-        ),
-        _signOutButton(),
-      ],
-    );
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 
 // Function sets userModel values from database
@@ -87,6 +141,7 @@ class _ProfileTabState extends State<ProfileTab> {
         .get()
         .then((result) {
       userModel.nickName = result['nickName'];
+      userModel.imageUrl = result['imageUrl'];
     });
   }
 
