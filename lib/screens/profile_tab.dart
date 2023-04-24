@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:budget_tracker/storage_service.dart';
+import 'package:budget_tracker/globals/globals.dart' as globals;
 import 'dart:io';
 
 class ProfileTab extends StatefulWidget {
@@ -119,6 +120,7 @@ class _ProfileTabState extends State<ProfileTab> {
                 ElevatedButton(
                   child: const Text("Koreguoti"),
                   onPressed: () {
+                    globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                     _userEditBottomSheet(context);
                   },
                 ),

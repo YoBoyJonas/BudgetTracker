@@ -1,6 +1,7 @@
 library globals;
 
 import 'package:flutter/material.dart';
+import 'package:budget_tracker/audio_player.dart';
 
 //required for backgrounds functionality
 int backgroundIndex = 0; // default = 0
@@ -22,3 +23,10 @@ List<ImageProvider> bg = [
   const AssetImage('assets/images/grey.png'),
   const AssetImage('assets/images/black.png')
 ];
+
+final Audio audioPlayer = Audio();
+enum SoundEffect {
+  buttonClick,
+  tabTransition
+}
+bool soundEnabled = true;
