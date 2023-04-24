@@ -11,6 +11,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:budget_tracker/data/income_expense_data.dart';
 import 'package:provider/provider.dart';
+import 'package:budget_tracker/globals/globals.dart' as globals;
 
 class AddTab extends StatefulWidget {
   const AddTab({super.key});
@@ -136,6 +137,7 @@ class _AddTabState extends State<AddTab> {
                                 return DropdownButton(
                                   items: expenseItems, 
                                   onChanged: (categoryValue) async {
+                                    globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                                     if (categoryValue == "0") {
                                       newExpenseNameController.text = "";
                                     }
@@ -191,12 +193,18 @@ class _AddTabState extends State<AddTab> {
             actions:[
               //save button
               MaterialButton(
-                onPressed: save,
+                onPressed: () {
+                  save();
+                  globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                },
                 child: const Text ('Išsaugoti'),
               ),
               // cancel button
               MaterialButton(
-                onPressed: cancel,
+                onPressed: () {
+                  cancel();
+                  globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                },
                 child: const Text ('Atmesti'),
               ),       
             ],
@@ -332,6 +340,7 @@ class _AddTabState extends State<AddTab> {
                                 return DropdownButton(
                                   items: incomeItems, 
                                   onChanged: (categoryValue) async {
+                                    globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                                     if (categoryValue == "0") {
                                       newIncomeNameController.text = "";
                                     }
@@ -386,12 +395,18 @@ class _AddTabState extends State<AddTab> {
             actions:[
               //save button
               MaterialButton(
-                onPressed: saveIncome, 
+                onPressed: () {
+                  saveIncome();
+                  globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                }, 
                 child: const Text ('Išsaugoti'),          
               ),
               // cancel button
               MaterialButton(
-                onPressed: cancelIncome,
+                onPressed: () {
+                  cancelIncome();
+                  globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                },
                 child: const Text ('Atmesti'),
               ),
             ],
@@ -495,7 +510,10 @@ class _AddTabState extends State<AddTab> {
                   width: 120,
                   height: 60,  
                   child: OutlinedButton(
-                    onPressed: () => addNewExpense('Pridėkite išlaidą'), 
+                    onPressed: () { 
+                      globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                      addNewExpense('Pridėkite išlaidą');
+                    }, 
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
                       side: const BorderSide(color: Colors.brown, style: BorderStyle.solid, width: 3),
@@ -515,7 +533,10 @@ class _AddTabState extends State<AddTab> {
                   height: 60,
                      
                   child: OutlinedButton(  
-                    onPressed: () => addNewIncome('Pridėkite pinigus'),
+                    onPressed: () {
+                      globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                      addNewIncome('Pridėkite pinigus');
+                    },
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
                       side: const BorderSide(color: Colors.brown, style: BorderStyle.solid, width: 3),

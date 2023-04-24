@@ -50,7 +50,10 @@ Widget build(BuildContext context) {
                   padding: const EdgeInsets.fromLTRB(15, 40, 15, 10),               
                   child: Center(
                     child: TextButton(
-                      onPressed: removeDBData,
+                      onPressed: () {
+                        removeDBData();
+                        globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                      },
                       child: Container(
                         padding: const EdgeInsets.all(7.0),
                         decoration: BoxDecoration(
@@ -110,6 +113,7 @@ Widget build(BuildContext context) {
                                         .toList(),
                                     ],
                                     onChanged: (categoryValue) async {
+                                      globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                                       setState(() {
                                         selectedExpenseCategory = categoryValue as String;
                                         _selectedCategoryType = 'Expense_Categories';
@@ -129,6 +133,7 @@ Widget build(BuildContext context) {
                       IconButton(
                         padding: const EdgeInsets.only(left: 20, right: 20),
                         onPressed: (){
+                          globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                           var collection = FirebaseFirestore.instance.collection(uid).doc('Categories').collection(_selectedCategoryType);
                           String selectedCategory = '';
                           if (selectedExpenseCategory != "0"){
@@ -196,6 +201,7 @@ Widget build(BuildContext context) {
                                         .toList(),
                                     ],
                                     onChanged: (categoryValue) async {
+                                      globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                                       setState(() {
                                         selectedIncomeCategory = categoryValue as String;
                                         _selectedCategoryType = 'Income_Categories';
@@ -252,6 +258,7 @@ Widget build(BuildContext context) {
                             }).toList(),
                             value: globals.selected,
                             onChanged: (value) {
+                              globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                               setState(() {
                                 globals.selected = value!;
                                 globals.backgroundIndex = globals.identities.indexOf(value);

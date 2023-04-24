@@ -67,6 +67,7 @@ class _MainScreenState extends State<MainScreen> {
           selectedItemColor: Colors.amber,
           unselectedItemColor: Colors.black,
           onTap: (index) {
+            globals.audioPlayer.playSoundEffect(globals.SoundEffect.tabTransition);
             setState(() {
               currentIndex = index;
             });

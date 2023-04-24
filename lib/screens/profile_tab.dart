@@ -168,6 +168,7 @@ class _ProfileTabState extends State<ProfileTab> {
                           color: Colors.orange,
                           iconSize: 25,
                           onPressed: () {
+                            globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                             Navigator.of(context).pop();
                           },
                         )
@@ -196,6 +197,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         ElevatedButton(
                           child: const Text('Išsaugoti'),
                           onPressed: () async {
+                            globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                             userModel.nickName = _nickNameController.text;
                             // setstate updates displayed nickname/profile info after clicking 'Išsaugoti'
                             setState(() {
