@@ -245,9 +245,16 @@ void removeDBData() async{
     }
     //---------------------------------------
 
-    var collection2 = FirebaseFirestore.instance.collection('income_categories');
+    var collection2 = FirebaseFirestore.instance.collection(uid).doc('income_categories').collection('income_categories');
     var snapshots2 = await collection2.get();
     for (var doc in snapshots2.docs) {
+      await doc.reference.delete();
+    }
+    //---------------------------------------
+
+    var collection3 = FirebaseFirestore.instance.collection(uid).doc('expense_categories').collection('expense_categories');
+    var snapshots3 = await collection3.get();
+    for (var doc in snapshots3.docs) {
       await doc.reference.delete();
     }
     //---------------------------------------

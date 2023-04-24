@@ -449,7 +449,6 @@ class _AddTabState extends State<AddTab> {
           backgroundColor: Colors.transparent,      
           body: Column(
             children:[
-
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -457,14 +456,12 @@ class _AddTabState extends State<AddTab> {
                     return const CircularProgressIndicator();
                   }
                   final userSnapshot = snapshot.data?.docs;
-                  if (userSnapshot!.isEmpty) {
-                    return const Text("no data");
-                  }
+
                   return Expanded ( child: ListView.builder(
                       scrollDirection: Axis.vertical, 
-                      itemCount: userSnapshot.length,
+                      itemCount: userSnapshot?.length,
                       itemBuilder: (context, index) => ExpenseTile(
-                        name: userSnapshot[index]["name"],
+                        name: userSnapshot![index]["name"],
                         amount: userSnapshot[index]["amount"], 
                         dateTime: userSnapshot[index]["dateTime"].toDate(),
                         type: userSnapshot[index]["type"]), ),
