@@ -16,6 +16,7 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   DbHelper dbHelper = DbHelper();
   double totalBalance = 0;
+  double totalExpenses = 0;
   //current users UID
   final uid = FirebaseAuth.instance.currentUser!.uid;
 
@@ -35,6 +36,7 @@ class _HomeTabState extends State<HomeTab> {
                   }
                   final userSnapshot = snapshot.data?.docs;
                   double tempBalance = 0;
+                  double tempExpense = 0;
                   //gets todays date
                   var todaysDate = DateTime.now();
                   //formats it into months
@@ -50,59 +52,109 @@ class _HomeTabState extends State<HomeTab> {
                       }
                       else if(doc["type"] == 'Expense' && month == todaysMonth){
                         tempBalance -= double.parse(doc["amount"]);
+                        tempExpense += double.parse(doc["amount"]);
                       }
                     }
                   }
                   totalBalance = tempBalance;
+                  totalExpenses = tempExpense;
                   return ListView(
                     children:[
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          margin: const EdgeInsets.all(
-                            12.0,
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.45,
+                              child: Container(                          
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(248, 226, 214, 192),
+                                  borderRadius: BorderRadius.circular(70),
+                                  border: Border.all(
+                                    width: 3,
+                                    color: Colors.brown, style: BorderStyle.solid,
+                                  )
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0,
+                                  horizontal: 8.0,
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      'BALANSAS',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 22.0,
+                                        color: Colors.green,
+                                        letterSpacing: 1.5,   
+                                        fontWeight: FontWeight.bold                   
+                                      ),
+                                    ),
+                                    Text(
+                                        '$totalBalance \$',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                        fontSize: 26.0,
+                                        color: Colors.green,
+                                      ),
+                                    ),           
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(70),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10.0,
-                              horizontal: 8.0,
-                            ),
-                            child: Column(
-                              children: [
-                                const Text(
-                                  'BALANSAS',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 22.0,
-                                    color: Colors.yellowAccent,
-                                    letterSpacing: 1.5,                      
+
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.45,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(248, 226, 214, 192),
+                                    borderRadius: BorderRadius.circular(70),
+                                    border: Border.all(
+                                      width: 3,
+                                      color: Colors.brown, style: BorderStyle.solid,
+                                    )
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10.0,
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      const Text(
+                                        'IŠLEISTA',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 22.0,
+                                          color: Colors.redAccent,
+                                          letterSpacing: 1.5,      
+                                          fontWeight: FontWeight.bold                
+                                        ),
+                                      ),
+                                      Text(
+                                          '$totalExpenses \$',
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                          fontSize: 26.0,
+                                          color: Colors.redAccent,
+                                        ),
+                                      ),           
+                                    ],
                                   ),
                                 ),
-                                Text(
-                                    '$totalBalance \$',
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                    fontSize: 26.0,
-                                    color: Colors.amber,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                
-                                
-                                
-                      
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
+
+                        ],
                       ),
                     ]
                   );
+
+
+
                 }
               ),
               
