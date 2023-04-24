@@ -15,7 +15,11 @@ class SettingsTab extends StatefulWidget {
 }
 
 class _SettingsTabState extends State<SettingsTab> {
-String selectedCategory = "0";
+
+String _selectedCategoryType = '';
+
+String selectedExpenseCategory = "0";
+String selectedIncomeCategory = "0";
 //current users UID
   final uid = FirebaseAuth.instance.currentUser!.uid;
 
@@ -61,116 +65,157 @@ Widget build(BuildContext context) {
 
                 // Antrasis settings buttonas leidziantis isnaikinti išsaugotą kategoriją
                 Container(
-                  padding: const EdgeInsets.only(left: 40.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Flexible(
-                        child: 
-                          Container(
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(30.0), color: Colors.amberAccent),
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                canvasColor: Colors.amberAccent,
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.42,
+                        padding: const EdgeInsets.only(left: 10),
+                        child: FutureBuilder<QuerySnapshot>(
+                          future: FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
+                            final categories = snapshot.data?.docs.reversed.toList();
+                            final activeCategories = categories?.where((category) => category['status'] == 'Active').toList();
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30.0),
+                                color: Colors.amberAccent,
                               ),
-                              child: Container(
-                                padding: const EdgeInsets.only(left: 15, right: 20),
-                                alignment: AlignmentDirectional.center,
-                                child: StreamBuilder<QuerySnapshot>(
-                                  stream: FirebaseFirestore.instance.collection('income_expense').snapshots(),
-                                            
-                                    builder: (context, snapshot) {
-                                    List<DropdownMenuItem> incomeExpenseCategories = [];
-                                            
-                                    if (!snapshot.hasData){
-                                      const CircularProgressIndicator();
-                                    }
-                                    else {
-                                      final categories = snapshot.data?.docs.reversed.toList();
-                                                        
-                                      incomeExpenseCategories.add(const DropdownMenuItem(
+                              child: Theme(
+                                data: Theme.of(context).copyWith(
+                                  canvasColor: Colors.amberAccent,
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.only(left: 15, right: 20),
+                                  alignment: AlignmentDirectional.center,
+                                  child: DropdownButton(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    items: [
+                                      const DropdownMenuItem(
                                         value: "0",
-                                        child: Text('Pasirinkti', style: TextStyle(letterSpacing: 1.5, fontWeight: FontWeight.bold)),
-                                      ));
-                                            
-                                      for(var category in categories!){
-                                        var nameText = category['name'].toString().toUpperCase();
-                                        int counter =0;
-                                          for(var income in incomeExpenseCategories){
-                                                        
-                                            if ((income.child as Text).data!.toLowerCase == category['name'].toLowerCase()){break;}
-                                            else if ((income.child as Text).data!.toLowerCase() != category['name'].toLowerCase()){counter++;}
-                                                        
-                                            if (counter == incomeExpenseCategories.length){
-                                              if (category['type'] == "Income"){
-                                                incomeExpenseCategories.add(
-                                                  DropdownMenuItem(
-                                                    value: category.id,
-                                                    child: Text(
-                                                      overflow: TextOverflow.ellipsis,
-                                                      nameText,
-                                                      style: const TextStyle(color: Colors.green, letterSpacing: 0.25, fontWeight: FontWeight.bold),
-                                                    )                        
-                                                  )  
-                                                );
-                                                break;
-                                              }
-                                              else{
-                                                incomeExpenseCategories.add(
-                                                      DropdownMenuItem(
-                                                        value: category.id,
-                                                        child: Text(
-                                                          overflow: TextOverflow.ellipsis,
-                                                          nameText,
-                                                          style: const TextStyle(color: Colors.red, letterSpacing: 0.25, fontWeight: FontWeight.bold),
-                                                        )                        
-                                                      )  
-                                                    );
-                                                    break;
-                                              }
-                                                        
-                                            }                          
-                                      }         
-                                    }
-                                    }
-                                      return DropdownButton(
-                                      borderRadius: BorderRadius.circular(30.0),
-                                      items: incomeExpenseCategories,
-                                      onChanged: (categoryValue) async{
-                                            
-                                        setState(() {
-                                          selectedCategory = categoryValue;
-                                        });
-                                      },
-                                    value: selectedCategory,
+                                        child: Text("Pasirinkti",
+                                          style: TextStyle(color: Colors.red,letterSpacing: 0.25,fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      ...?activeCategories
+                                        ?.map((category) => DropdownMenuItem(
+                                          value: category.id,
+                                          child: Text(category['category'].toString().toUpperCase(),
+                                            style: const TextStyle(color: Colors.red,letterSpacing: 0.25,fontWeight: FontWeight.bold),
+                                          ),
+                                        ))
+                                        .toList(),
+                                    ],
+                                    onChanged: (categoryValue) async {
+                                      setState(() {
+                                        selectedExpenseCategory = categoryValue as String;
+                                        _selectedCategoryType = 'Expense_Categories';
+                                      });
+                                    },
+                                    value: selectedExpenseCategory,
                                     isExpanded: true,
-                                    );
-                                    }
-                                                    
-                                                    
+                                  ),
                                 ),
                               ),
-                            )
-                
-                      )),
+                            );
+                          },
+                        ),
+                      ),
 
-                    IconButton(
-                      onPressed: (){
-                        var collection = FirebaseFirestore.instance.collection('income_expense');
 
-                        collection
-                          .doc(selectedCategory)
-                          .delete();
+                      IconButton(
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        onPressed: (){
+                          var collection = FirebaseFirestore.instance.collection(uid).doc('Categories').collection(_selectedCategoryType);
+                          String selectedCategory = '';
+                          if (selectedExpenseCategory != "0"){
+                            collection.doc(selectedExpenseCategory).update({
+                              'status': 'deleted'
+                            }).then((value){
+                              setState(() {                    
+                                selectedExpenseCategory = "0";
+                              });
+                            });
+                          }
+                          else{
+                            collection.doc(selectedIncomeCategory).update({
+                              'status': 'deleted'
+                            }).then((value){
+                              setState(() {                    
+                                selectedIncomeCategory = "0";
+                              });
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.delete, color: Colors.amberAccent,),
+                      ),
 
-                          selectedCategory = "0";
-                      },
-                      icon: const Icon(Icons.delete, color: Colors.amberAccent,),
-                    )
+
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.42,
+                        padding: const EdgeInsets.only(right: 10),
+                        child: FutureBuilder<QuerySnapshot>(
+                          future: FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Income_Categories').get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
+                            final categories = snapshot.data?.docs.reversed.toList();
+                            final activeCategories = categories?.where((category) => category['status'] == 'Active').toList();
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30.0),
+                                color: Colors.amberAccent,
+                              ),
+                              child: Theme(
+                                data: Theme.of(context).copyWith(
+                                  canvasColor: Colors.amberAccent,
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.only(left: 15, right: 20),
+                                  alignment: AlignmentDirectional.center,
+                                  child: DropdownButton(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    items: [
+                                      const DropdownMenuItem(
+                                        value: "0",
+                                        child: Text("Pasirinkti",
+                                          style: TextStyle(color: Colors.green,letterSpacing: 0.25,fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      ...?activeCategories
+                                        ?.map((category) => DropdownMenuItem(
+                                          value: category.id,
+                                          child: Text(category['category'].toString().toUpperCase(),
+                                            style: const TextStyle(color: Colors.green,letterSpacing: 0.25,fontWeight: FontWeight.bold),
+                                          ),
+                                        ))
+                                        .toList(),
+                                    ],
+                                    onChanged: (categoryValue) async {
+                                      setState(() {
+                                        selectedIncomeCategory = categoryValue as String;
+                                        _selectedCategoryType = 'Income_Categories';
+                                      });
+                                    },
+                                    value: selectedIncomeCategory,
+                                    isExpanded: true,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                   ],
                 ),
                 ),   
               
               // Šis SizedBox skiria anksčiau esantį setting'ą nuo sekančio setting'o, kad nesusilietų widget'ai
-              const SizedBox(height: 40,),
+              const SizedBox(height: 10,),
 
               // Trečiasis setting'as susijęs su background pasirinkimu ir dropdown listu su background option'ais
               Container(
@@ -245,14 +290,14 @@ void removeDBData() async{
     }
     //---------------------------------------
 
-    var collection2 = FirebaseFirestore.instance.collection(uid).doc('income_categories').collection('income_categories');
+    var collection2 = FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Income_Categories');
     var snapshots2 = await collection2.get();
     for (var doc in snapshots2.docs) {
       await doc.reference.delete();
     }
     //---------------------------------------
 
-    var collection3 = FirebaseFirestore.instance.collection(uid).doc('expense_categories').collection('expense_categories');
+    var collection3 = FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories');
     var snapshots3 = await collection3.get();
     for (var doc in snapshots3.docs) {
       await doc.reference.delete();

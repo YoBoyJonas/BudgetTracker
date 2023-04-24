@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 
 class ExpenseTile extends StatelessWidget {
@@ -22,7 +20,6 @@ class ExpenseTile extends StatelessWidget {
     return ListTile(     
           title: type == 'Income'?
           Container(
-            margin: const EdgeInsets.only(top: 5.0),
             decoration: 
               BoxDecoration(
                 color: const Color.fromARGB(248, 226, 214, 192),
@@ -38,9 +35,8 @@ class ExpenseTile extends StatelessWidget {
               trailing: Text('\$ $amount', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25)),
             )
           )
-          
+
           :Container(
-            margin: const EdgeInsets.only(top: 5.0),
             decoration: 
               BoxDecoration(
                 color: const Color.fromARGB(248, 226, 214, 192),
