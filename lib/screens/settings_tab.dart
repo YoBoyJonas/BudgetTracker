@@ -260,7 +260,29 @@ Widget build(BuildContext context) {
                           ),
                   ),
                 ),
-              ),    
+              ),
+
+              // Garso setting   
+              Container(
+                margin: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 0),
+                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(30.0), color: Colors.amberAccent),
+                  child: Theme(
+                    data: Theme.of(context).copyWith(canvasColor: Colors.amberAccent),
+                      child: ListTile(
+                      title: const Text("Įjungti garsą", style: TextStyle(letterSpacing: 1.5, fontWeight: FontWeight.bold)),
+                        trailing: Switch(
+                          value: globals.soundEnabled,
+                          onChanged: (bool value) {
+                            setState(() {
+                              globals.soundEnabled = value;
+                            });
+                          },
+                        ),
+                    )
+                  )
+                ),
+
               ],
           ),
                     
