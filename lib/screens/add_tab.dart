@@ -515,9 +515,11 @@ class _AddTabState extends State<AddTab> {
                       addNewExpense('Pridėkite išlaidą');
                     }, 
                     style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                      side: const BorderSide(color: Colors.brown, style: BorderStyle.solid, width: 3),
-                      backgroundColor: const Color.fromARGB(248, 226, 214, 192)               
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(70.0)),
+                      side: const BorderSide(
+                        color: Colors.brown, style: BorderStyle.solid, width: 3
+                        ),
+                      backgroundColor: globals.selectedWidgetColor          
                     ),                   
                     child: const Text('Išlaidos', style: TextStyle(fontSize: 20.0,color: Colors.red, fontWeight: FontWeight.bold)),
                   ),  
@@ -538,9 +540,9 @@ class _AddTabState extends State<AddTab> {
                       addNewIncome('Pridėkite pinigus');
                     },
                     style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(70.0)),
                       side: const BorderSide(color: Colors.brown, style: BorderStyle.solid, width: 3),
-                      backgroundColor: const Color.fromARGB(248, 226, 214, 192)                       
+                      backgroundColor: globals.selectedWidgetColor                     
                     ),  
                     child: const Text('Pajamos', style: TextStyle(fontSize: 20.0, color: Colors.green, fontWeight: FontWeight.bold),),      
                   ),  

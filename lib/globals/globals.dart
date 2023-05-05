@@ -24,6 +24,13 @@ List<ImageProvider> bg = [
   const AssetImage('assets/images/black.png')
 ];
 
+List<Color> selectedWidgetColorList = <Color>[
+  const Color.fromARGB(248, 226, 214, 192),
+  Colors.amberAccent
+];
+
+Color selectedWidgetColor = selectedWidgetColorList[0]; // default = [0]
+
 final Audio audioPlayer = Audio();
 enum SoundEffect {
   buttonClick,

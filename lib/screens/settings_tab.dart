@@ -57,10 +57,14 @@ Widget build(BuildContext context) {
                       child: Container(
                         padding: const EdgeInsets.all(7.0),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30.0),
-                          color: Colors.amberAccent,
+                          color: globals.selectedWidgetColor,
+                          borderRadius: BorderRadius.circular(70),
+                                  border: Border.all(
+                                    width: 3,
+                                    color: Colors.brown, style: BorderStyle.solid,
+                                  )
                           ),
-                        child: const Text('Naikinti duomenų bazės duomenis (laikina)', style: TextStyle(color: Colors.red, letterSpacing: 1.5, fontSize: 16))
+                        child: const Text('Naikinti duomenų bazės duomenis (laikina)', style: TextStyle(color: Colors.red, letterSpacing: 1.5, fontSize: 15))
                       ),              
                     ),
                   ),
@@ -84,8 +88,12 @@ Widget build(BuildContext context) {
                             final activeCategories = categories?.where((category) => category['status'] == 'Active').toList();
                             return Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30.0),
-                                color: Colors.amberAccent,
+                                color: globals.selectedWidgetColor,
+                                borderRadius: BorderRadius.circular(70),
+                                        border: Border.all(
+                                          width: 3,
+                                          color: Colors.brown, style: BorderStyle.solid,
+                                        )
                               ),
                               child: Theme(
                                 data: Theme.of(context).copyWith(
@@ -155,7 +163,7 @@ Widget build(BuildContext context) {
                             });
                           }
                         },
-                        icon: const Icon(Icons.delete, color: Colors.amberAccent,),
+                        icon: Icon(Icons.delete, color: globals.selectedWidgetColor),
                       ),
 
 
@@ -172,8 +180,12 @@ Widget build(BuildContext context) {
                             final activeCategories = categories?.where((category) => category['status'] == 'Active').toList();
                             return Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30.0),
-                                color: Colors.amberAccent,
+                                color: globals.selectedWidgetColor,
+                                borderRadius: BorderRadius.circular(70),
+                                        border: Border.all(
+                                          width: 3,
+                                          color: Colors.brown, style: BorderStyle.solid,
+                                        )
                               ),
                               child: Theme(
                                 data: Theme.of(context).copyWith(
@@ -226,7 +238,14 @@ Widget build(BuildContext context) {
               // Trečiasis setting'as susijęs su background pasirinkimu ir dropdown listu su background option'ais
               Container(
                 padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(30.0), color: Colors.amberAccent),
+                decoration: BoxDecoration(
+                  color: globals.selectedWidgetColor,
+                  borderRadius: BorderRadius.circular(70),
+                    border: Border.all(
+                      width: 3,
+                      color: Colors.brown, style: BorderStyle.solid,
+                    )
+                  ),
                 child: Theme(
                   data: Theme.of(context).copyWith(canvasColor: Colors.amberAccent),                  
                   child: ButtonTheme(
@@ -273,7 +292,14 @@ Widget build(BuildContext context) {
               Container(
                 margin: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 0),
                 padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(30.0), color: Colors.amberAccent),
+                decoration: BoxDecoration(
+                  color: globals.selectedWidgetColor,
+                    borderRadius: BorderRadius.circular(70),
+                      border: Border.all(
+                        width: 3,
+                        color: Colors.brown, style: BorderStyle.solid,
+                      )
+                  ),
                   child: Theme(
                     data: Theme.of(context).copyWith(canvasColor: Colors.amberAccent),
                       child: ListTile(

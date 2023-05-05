@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
+import 'package:budget_tracker/globals/globals.dart' as globals;
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -67,7 +68,7 @@ class _HomeTabState extends State<HomeTab> {
                               width: MediaQuery.of(context).size.width * 0.45,
                               child: Container(                          
                                 decoration: BoxDecoration(
-                                  color: const Color.fromARGB(248, 226, 214, 192),
+                                  color: globals.selectedWidgetColor,
                                   borderRadius: BorderRadius.circular(70),
                                   border: Border.all(
                                     width: 3,
@@ -110,7 +111,7 @@ class _HomeTabState extends State<HomeTab> {
                                 width: MediaQuery.of(context).size.width * 0.45,
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: const Color.fromARGB(248, 226, 214, 192),
+                                    color: globals.selectedWidgetColor,
                                     borderRadius: BorderRadius.circular(70),
                                     border: Border.all(
                                       width: 3,

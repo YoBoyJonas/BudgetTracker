@@ -89,32 +89,56 @@ class _ProfileTabState extends State<ProfileTab> {
                 // Email from Firebase auth
                 Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Email: ${userAuth?.email}",
-                      style: const TextStyle(
-                        fontSize: 20,
-                        backgroundColor: Colors.orangeAccent,
+                    child: Container(
+                      padding: const EdgeInsets.all(7.0),
+                      decoration: BoxDecoration(
+                        color: globals.selectedWidgetColor,
+                        borderRadius: BorderRadius.circular(70),
+                                border: Border.all(
+                                  width: 3,
+                                  color: Colors.brown, style: BorderStyle.solid,
+                                )
+                      ),
+                      child: Text(
+                        "Email: ${userAuth?.email}",
+                        style: const TextStyle(fontSize: 20,),
                       ),
                     )),
                 // Creation date from Firebase auth
                 Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      // may run into a crash. TODO: find alternative to question mark syntax
-                      "Created: ${DateFormat('yyyy-MM-dd').format(userAuth?.metadata.creationTime as DateTime)}",
-                      style: const TextStyle(
-                        fontSize: 20,
-                        backgroundColor: Colors.orangeAccent,
+                    padding: const EdgeInsets.all(8.0),             
+                    child: Container(
+                      padding: const EdgeInsets.all(7.0),
+                      decoration: BoxDecoration(
+                        color: globals.selectedWidgetColor,
+                        borderRadius: BorderRadius.circular(70),
+                                border: Border.all(
+                                  width: 3,
+                                  color: Colors.brown, style: BorderStyle.solid,
+                                )
+                      ),
+                      child: Text(
+                        // may run into a crash. TODO: find alternative to question mark syntax
+                        "Created: ${DateFormat('yyyy-MM-dd').format(userAuth?.metadata.creationTime as DateTime)}",
+                        style: const TextStyle(fontSize: 20,),
                       ),
                     )),
                 // Additional custom user fields
                 Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Nickname: ${_nickNameController.text}",
-                      style: const TextStyle(
-                        fontSize: 20,
-                        backgroundColor: Colors.orangeAccent,
+                    child: Container(
+                      padding: const EdgeInsets.all(7.0),
+                      decoration: BoxDecoration(
+                        color: globals.selectedWidgetColor,
+                        borderRadius: BorderRadius.circular(70),
+                                border: Border.all(
+                                  width: 3,
+                                  color: Colors.brown, style: BorderStyle.solid,
+                                )
+                      ),
+                      child: Text(
+                        "Nickname: ${_nickNameController.text}",
+                        style: const TextStyle(fontSize: 20,),
                       ),
                     )),
                 ElevatedButton(
