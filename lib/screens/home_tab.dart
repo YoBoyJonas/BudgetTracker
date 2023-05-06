@@ -19,7 +19,8 @@ class _HomeTabState extends State<HomeTab> {
   double totalExpenses = 0;
   //current users UID
   final uid = FirebaseAuth.instance.currentUser!.uid;
-
+  //gets todays date
+  DateTime todaysDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,28 +30,27 @@ class _HomeTabState extends State<HomeTab> {
             backgroundColor: Colors.transparent,
             body: 
             StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense').snapshots(),
+                stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection(formatDate(todaysDate, [yyyy, mm])+'income_expense').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
                   }
                   final userSnapshot = snapshot.data?.docs;
+                  
                   double tempBalance = 0;
                   double tempExpense = 0;
-                  //gets todays date
-                  var todaysDate = DateTime.now();
-                  //formats it into months
-                  final todaysMonth = formatDate(todaysDate, [mm]);
+
+
                   if (userSnapshot!.isNotEmpty) {
                     for (var doc in userSnapshot) {
                       //gets date from document
                       var date = doc["dateTime"].toDate();
-                      final month = formatDate(date, [mm]);
+                      final month = formatDate(date, [yyyy, mm]);
                       //checks if data from document is from this month
-                      if(doc["type"] == 'Income' && month == todaysMonth){
+                      if(doc["type"] == 'Income'){
                         tempBalance += double.parse(doc["amount"]);
                       }
-                      else if(doc["type"] == 'Expense' && month == todaysMonth){
+                      else if(doc["type"] == 'Expense'){
                         tempBalance -= double.parse(doc["amount"]);
                         tempExpense += double.parse(doc["amount"]);
                       }
@@ -108,7 +108,7 @@ class _HomeTabState extends State<HomeTab> {
                             Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.45,
+                                width: MediaQuery.of(context).size.width * 0.44,
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: globals.selectedWidgetColor,

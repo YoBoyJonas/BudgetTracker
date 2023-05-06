@@ -168,7 +168,7 @@ Widget build(BuildContext context) {
 
 
                       Container(
-                        width: MediaQuery.of(context).size.width * 0.42,
+                        width: MediaQuery.of(context).size.width * 0.41,
                         padding: const EdgeInsets.only(right: 10),
                         child: FutureBuilder<QuerySnapshot>(
                           future: FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Income_Categories').get(),

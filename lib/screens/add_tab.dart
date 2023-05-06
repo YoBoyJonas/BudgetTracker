@@ -11,6 +11,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:budget_tracker/data/income_expense_data.dart';
 import 'package:provider/provider.dart';
+import 'package:date_format/date_format.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
 
 class AddTab extends StatefulWidget {
@@ -24,6 +25,7 @@ class _AddTabState extends State<AddTab> {
   String selectedCategory = "0";
   //current users UID
   final uid = FirebaseAuth.instance.currentUser!.uid;
+  DateTime todaysDate = DateTime.now();
 
   final GlobalKey<FormFieldState> formFieldKey = GlobalKey();
     final GlobalKey<FormFieldState> formFieldKey2 = GlobalKey();
@@ -77,7 +79,7 @@ class _AddTabState extends State<AddTab> {
                       alignment: Alignment.centerRight,
                       child: SizedBox(
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense').snapshots(),
+                          stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection(formatDate(todaysDate, [yyyy, mm])+'income_expense').snapshots(),
                           builder: (context, snapshot) {
                             List<DropdownMenuItem> expenseItems = [];
           
@@ -279,7 +281,7 @@ class _AddTabState extends State<AddTab> {
                       alignment: Alignment.centerRight,
                       child: SizedBox(
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense').snapshots(),
+                          stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection(formatDate(todaysDate, [yyyy, mm])+'income_expense').snapshots(),
                           builder: (context, snapshot) {
                             List<DropdownMenuItem> incomeItems = [];
           
@@ -483,7 +485,7 @@ class _AddTabState extends State<AddTab> {
           body: Column(
             children:[
               StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense').snapshots(),
+                stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection(formatDate(todaysDate, [yyyy, mm])+'income_expense').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -561,9 +563,16 @@ class _AddTabState extends State<AddTab> {
 
   //adds expense to firestore database
   Future createExpense({required ExpenseItem item}) async {
-    
-    final docLedger = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense').doc();
-   
+    //gets todays date
+    var todaysDate = DateTime.now();
+    //formats it into months
+    final today = formatDate(todaysDate, [yyyy, mm]);
+    final docLedger = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('$today'+'income_expense').doc();
+    final balance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$today'+'Balance');
+    final expenseBalance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'Expense');
+    final expenseBalanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'Expense').get();
+    final balanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$today'+'Balance').get();
+
     final json = {
       'name': item.name,
       'amount': item.amount,
@@ -571,7 +580,49 @@ class _AddTabState extends State<AddTab> {
       'type': item.type
     };
 
-    await docLedger.set(json);
+
+    if(item.type == 'Expense'){
+      if(expenseBalanceSnapshot.exists)
+      {
+        Map<String, dynamic> data = expenseBalanceSnapshot.data()!;
+        double bal = double.parse(data['Balance'].toString());
+        bal += double.parse(item.amount);
+        expenseBalance.update({'Balance' : bal });
+      }
+      else
+      {
+        double bal = double.parse(item.amount);
+        expenseBalance.set({'Balance' : bal });
+      }
+      if(balanceSnapshot.exists)
+      {
+        Map<String, dynamic> data = balanceSnapshot.data()!;
+        double bal = double.parse(data['Balance'].toString());
+        bal += double.parse(item.amount);
+        balance.update({'Balance' : bal });
+      }
+      else
+      {
+        double bal = double.parse(item.amount);
+        balance.set({'Balance' : bal });
+      }
+      await docLedger.set(json);
+    }
+    else{
+      if(balanceSnapshot.exists)
+      {
+        Map<String, dynamic> data = balanceSnapshot.data()!;
+        double bal = double.parse(data['Balance'].toString());
+        bal += double.parse(item.amount);
+        balance.update({'Balance' : bal });
+      }
+      else
+      {
+        double bal = double.parse(item.amount);
+        balance.set({'Balance' : bal });
+      }
+      await docLedger.set(json);
+    }
   }
 
     Future createIncomeCategories({required String item}) async {
