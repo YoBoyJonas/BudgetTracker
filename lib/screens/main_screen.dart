@@ -3,7 +3,7 @@ import 'package:budget_tracker/screens/settings_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:budget_tracker/screens/Home_tab.dart';
 import 'package:budget_tracker/screens/add_tab.dart';
-
+import 'package:budget_tracker/screens/statistics_screen.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
 
 
@@ -22,7 +22,7 @@ class _MainScreenState extends State<MainScreen> {
       case 0:
         return const HomeTab();
       case 1:
-        return Container();
+        return const StatisticsScreen();
       case 2:
         return const AddTab();
       case 3:

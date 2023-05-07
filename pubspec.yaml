@@ -19,7 +19,9 @@ dependencies:
   firebase_storage: ^11.1.1
   image_picker: ^0.8.7+4
   audioplayers: ^4.0.1
+  fl_chart: ^0.60.0
   provider:
+  jiffy: ^5.0.0
 
 dev_dependencies:
   flutter_test:
