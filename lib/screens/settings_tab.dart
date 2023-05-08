@@ -95,7 +95,7 @@ Widget build(BuildContext context) {
                               ),
                               child: Theme(
                                 data: Theme.of(context).copyWith(
-                                  canvasColor: Colors.amberAccent,
+                                  canvasColor: globals.selectedWidgetColor,
                                 ),
                                 child: Container(
                                   padding: const EdgeInsets.only(left: 15, right: 20),
@@ -187,7 +187,7 @@ Widget build(BuildContext context) {
                               ),
                               child: Theme(
                                 data: Theme.of(context).copyWith(
-                                  canvasColor: Colors.amberAccent,
+                                  canvasColor: globals.selectedWidgetColor,
                                 ),
                                 child: Container(
                                   padding: const EdgeInsets.only(left: 15, right: 20),
@@ -245,7 +245,7 @@ Widget build(BuildContext context) {
                     )
                   ),
                 child: Theme(
-                  data: Theme.of(context).copyWith(canvasColor: Colors.amberAccent),                  
+                  data: Theme.of(context).copyWith(canvasColor: globals.selectedWidgetColor),                  
                   child: ButtonTheme(
                       child: DropdownButton(
                         borderRadius: BorderRadius.circular(30.0),
@@ -299,7 +299,7 @@ Widget build(BuildContext context) {
                       )
                   ),
                   child: Theme(
-                    data: Theme.of(context).copyWith(canvasColor: Colors.amberAccent),
+                    data: Theme.of(context).copyWith(canvasColor: globals.selectedWidgetColor),
                       child: ListTile(
                       title: const Text("Įjungti garsą", style: TextStyle(letterSpacing: 1.5, fontWeight: FontWeight.bold)),
                         trailing: Switch(

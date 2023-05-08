@@ -192,12 +192,10 @@ class _HomeTabState extends State<HomeTab> {
                             Expanded(
                               child: Center(
                                 child: Text("Daugiausiai išleidai ant ", 
-                                style: TextStyle(color: Colors.lightBlue, letterSpacing: 1.5, fontSize: 16, decoration: TextDecoration.none)
-                                
+                                style: TextStyle(color: Colors.lightBlue, letterSpacing: 1.5, fontSize: 16, decoration: TextDecoration.none)                             
                                 ),
                               ),
                             ),
-                                      
                           ] 
                         ),
                         Container(
@@ -220,6 +218,16 @@ class _HomeTabState extends State<HomeTab> {
                                                 decoration: TextDecoration.none,
                                               ),
                                             );
+                                          } else if (snapshot.hasError) {
+                                            return const Text(
+                                            "Duomenų ",
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              letterSpacing: 1.5,
+                                              fontSize: 16,
+                                              decoration: TextDecoration.none,
+                                            )
+                                            );
                                           }
                                           return const SizedBox();
                                         },
@@ -241,13 +249,21 @@ class _HomeTabState extends State<HomeTab> {
                                           decoration: TextDecoration.none,
                                         ),
                                       );
-                                    }
+                                    } else if (snapshot.hasError) {
+                                        return const Text(
+                                        "nerasta",
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          letterSpacing: 1.5,
+                                          fontSize: 16,
+                                          decoration: TextDecoration.none,
+                                        )
+                                        );
+                                      }
                                     return const SizedBox();
                                   },
                                 ),
-                              ),  
-                        
-                        
+                              ),                
                             ],
                           ),
                         ),
