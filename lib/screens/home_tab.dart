@@ -1,4 +1,3 @@
-import 'package:budget_tracker/controllers/db_helper.dart';
 import 'package:budget_tracker/data/income_expense_data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,7 +13,6 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  DbHelper dbHelper = DbHelper();
   double totalBalance = 0;
   double totalExpenses = 0;
   //current users UID

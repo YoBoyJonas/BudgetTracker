@@ -24,6 +24,7 @@ List<ImageProvider> bg = [
   const AssetImage('assets/images/black.png')
 ];
 
+//changes all widget color to the selected one
 List<Color> selectedWidgetColorList = <Color>[
   const Color.fromARGB(248, 226, 214, 192),
   Colors.amberAccent

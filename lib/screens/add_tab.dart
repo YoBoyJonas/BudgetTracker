@@ -1,6 +1,5 @@
 
 import 'package:budget_tracker/components/expense_tile.dart';
-import 'package:budget_tracker/controllers/db_helper.dart';
 import 'package:budget_tracker/models/expense_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -226,12 +225,6 @@ class _AddTabState extends State<AddTab> {
     //adds expense to firestore database
     createExpense(item: newExpense);
 
-    if (double.parse(newExpenseAmountController.text) >= 0)
-    {
-      DbHelper dbHelper = DbHelper();
-      dbHelper.addData(double.parse(newExpenseAmountController.text), 'Expense');
-    }
-
     Provider.of<ExpenseData>(context, listen: false).addNewExpense(newExpense);
 
     Navigator.pop(context);
@@ -429,11 +422,7 @@ class _AddTabState extends State<AddTab> {
       );
       //adds income to firestore database
       createExpense(item: newIncome);
-      if (double.parse(newIncomeAmountController.text) >= 0)
-      {
-        DbHelper dbHelper = DbHelper();
-        dbHelper.addData(double.parse(newIncomeAmountController.text), 'Income');      
-      }
+
       
       Provider.of<ExpenseData>(context, listen: false).addNewIncome(newIncome);
       Navigator.pop(context);
@@ -492,14 +481,20 @@ class _AddTabState extends State<AddTab> {
                   }
                   final userSnapshot = snapshot.data?.docs;
 
-                  return Expanded ( child: ListView.builder(
-                      scrollDirection: Axis.vertical, 
-                      itemCount: userSnapshot?.length,
-                      itemBuilder: (context, index) => ExpenseTile(
-                        name: userSnapshot![index]["name"],
-                        amount: userSnapshot[index]["amount"], 
-                        dateTime: userSnapshot[index]["dateTime"].toDate(),
-                        type: userSnapshot[index]["type"]), ),
+                  return Expanded ( child: Container(
+                    padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: ListView.builder(
+                        scrollDirection: Axis.vertical, 
+                        itemCount: userSnapshot?.length,
+                        itemBuilder: (context, index) => Container(
+                          padding: EdgeInsets.only(top: 5),
+                          child: ExpenseTile(
+                            name: userSnapshot![index]["name"],
+                            amount: userSnapshot[index]["amount"], 
+                            dateTime: userSnapshot[index]["dateTime"].toDate(),
+                            type: userSnapshot[index]["type"]),
+                        ), ),
+                  ),
                   );
                 }
               ),
@@ -598,17 +593,17 @@ class _AddTabState extends State<AddTab> {
       {
         Map<String, dynamic> data = balanceSnapshot.data()!;
         double bal = double.parse(data['Balance'].toString());
-        bal += double.parse(item.amount);
+        bal -= double.parse(item.amount);
         balance.update({'Balance' : bal });
       }
       else
       {
-        double bal = double.parse(item.amount);
+        double bal =  0 - double.parse(item.amount);
         balance.set({'Balance' : bal });
       }
-      await docLedger.set(json);
     }
-    else{
+    else
+    {
       if(balanceSnapshot.exists)
       {
         Map<String, dynamic> data = balanceSnapshot.data()!;
@@ -621,8 +616,9 @@ class _AddTabState extends State<AddTab> {
         double bal = double.parse(item.amount);
         balance.set({'Balance' : bal });
       }
-      await docLedger.set(json);
+
     }
+    await docLedger.set(json);
   }
 
     Future createIncomeCategories({required String item}) async {

@@ -34,9 +34,7 @@ Widget build(BuildContext context) {
           ),
         ),
         Scaffold(
-          backgroundColor: Colors.transparent,
-          
-          
+          backgroundColor: Colors.transparent,           
           body: Stack(
             children: [
             Column(       
@@ -327,18 +325,12 @@ Widget build(BuildContext context) {
   );
 }
 void removeDBData() async{
-    try{
-    if (await Hive.boxExists('money')){
-      await Hive.deleteFromDisk();
-      await Hive.openBox('money');
-    }
     
-    } on Exception{if (kDebugMode) {
-      print('klaida');
-    }}
+    //deletes almost all data frome firestore database
     
-    //deletes all data frome firestore database
-    var collection = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('income_expense');
+    //---------------------------------------
+
+    var collection = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('202305income_expense');
     var snapshots = await collection.get();
     for (var doc in snapshots.docs) {
       await doc.reference.delete();
@@ -355,6 +347,20 @@ void removeDBData() async{
     var collection3 = FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories');
     var snapshots3 = await collection3.get();
     for (var doc in snapshots3.docs) {
+      await doc.reference.delete();
+    }
+    //---------------------------------------
+
+    var collection4 = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances');
+    var snapshots4 = await collection4.get();
+    for (var doc in snapshots4.docs) {
+      await doc.reference.delete();
+    }
+    //---------------------------------------
+
+    var collection5 = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses');
+    var snapshots5 = await collection5.get();
+    for (var doc in snapshots5.docs) {
       await doc.reference.delete();
     }
     //---------------------------------------
