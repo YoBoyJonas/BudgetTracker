@@ -18,6 +18,7 @@ class BarData{
   });
 
   List<IndividualBar> barData = [];
+  double max = 0;
 
   //initialize bar data
   void initializeBarData() {
@@ -29,6 +30,11 @@ class BarData{
       IndividualBar(x: 4, y: month5Amount),
       IndividualBar(x: 5, y: month6Amount)
     ];
+    for(var data in barData){
+      if(max < data.y){
+        max = data.y;
+      }
+    }
   }
 
 }

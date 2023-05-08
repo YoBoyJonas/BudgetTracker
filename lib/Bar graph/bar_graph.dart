@@ -27,7 +27,7 @@ myBarData.initializeBarData();
 
     return BarChart(
       BarChartData(
-        maxY: 1000,
+        maxY: myBarData.max,
         minY: 0,
         gridData: FlGridData(show: false),
         borderData: FlBorderData(show: false),
