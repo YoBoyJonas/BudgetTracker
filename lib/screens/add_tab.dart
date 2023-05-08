@@ -14,7 +14,7 @@ import 'package:date_format/date_format.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
 
 class AddTab extends StatefulWidget {
-  const AddTab({super.key});
+  const AddTab({Key? key}) : super(key: key);
 
   @override
   State<AddTab> createState() => _AddTabState();
@@ -236,51 +236,7 @@ class _AddTabState extends State<AddTab> {
 
   }
 
-  Future<void> calculateMaxExpense() async{
-    final snapshot = await FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('202305income_expense').get();
-    final docList = snapshot.docs;
-    final nameToTotalAmount = <String, double>{};
-
-    if (docList.isEmpty){
-      return;
-    }
-    for (final doc in docList)
-    {
-      final type = doc.data()['type'] as String;
-      if (type == 'Expense')
-      {
-        final name = doc.data()['name'] as String;
-        final amount = double.parse(doc.data()['amount']);
-
-        if (nameToTotalAmount.containsKey(name) && type == 'Expense') {
-          nameToTotalAmount[name] = (nameToTotalAmount[name]! + amount);
-        } else if (!nameToTotalAmount.containsKey(name) && type == 'Expense'){
-          nameToTotalAmount[name] = amount;
-        }
-
-        final maxExpenseName = nameToTotalAmount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
-        final maxExpenseAmount = nameToTotalAmount.values.reduce((a, b) => a > b ? a : b);
-
-        var todaysDate = DateTime.now();
-        //formats it into months
-        final today = formatDate(todaysDate, [yyyy, mm]);
-
-        final maxExpenseBalanceDoc = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense').get();
-
-        if (!maxExpenseBalanceDoc.exists) {
-          await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense')
-            .set({'Name' : maxExpenseName, 'Amount' : maxExpenseAmount});
-        } else {
-          final existingAmount = maxExpenseBalanceDoc.data()!['Amount'];
-          if (maxExpenseAmount > existingAmount){
-            await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense')
-              .update({'Name' : maxExpenseName, 'Amount' : maxExpenseAmount});
-          }
-        }
-        }
-        
-    }     
-  }
+  
 
   void addNewIncome(String mainText){
     showDialog(
@@ -355,8 +311,7 @@ class _AddTabState extends State<AddTab> {
                                       if (value.size == 0) {
                                         FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Income_Categories').add({
                                           'category': category['name'],
-                                          'status' : 'Active'
-                                     
+                                          'status' : 'Active'                              
                                           });
                                       }
                                     });
@@ -692,3 +647,50 @@ class _AddTabState extends State<AddTab> {
     await docLedger.set(json);
   }
 }
+
+Future<void> calculateMaxExpense() async{
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+    final snapshot = await FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('202305income_expense').get();
+    final docList = snapshot.docs;
+    final nameToTotalAmount = <String, double>{};
+    var todaysDate = DateTime.now();
+    final today = formatDate(todaysDate, [yyyy, mm]);
+    
+    if (docList.isEmpty){
+      await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense')
+            .set({'Name' : 0, 'Amount' : 0});
+      return;
+    }
+    for (final doc in docList)
+    {
+      final type = doc.data()['type'] as String;
+      if (type == 'Expense')
+      {
+        final name = doc.data()['name'] as String;
+        final amount = double.parse(doc.data()['amount']);
+
+        if (nameToTotalAmount.containsKey(name) && type == 'Expense') {
+          nameToTotalAmount[name] = (nameToTotalAmount[name]! + amount);
+        } else if (!nameToTotalAmount.containsKey(name) && type == 'Expense'){
+          nameToTotalAmount[name] = amount;
+        }
+
+        final maxExpenseName = nameToTotalAmount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+        final maxExpenseAmount = nameToTotalAmount.values.reduce((a, b) => a > b ? a : b);
+
+        final maxExpenseBalanceDoc = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense').get();
+
+        if (!maxExpenseBalanceDoc.exists) {
+          await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense')
+            .set({'Name' : maxExpenseName, 'Amount' : maxExpenseAmount});
+        } else {
+          final existingAmount = maxExpenseBalanceDoc.data()!['Amount'];
+          if (maxExpenseAmount > existingAmount){
+            await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense')
+              .update({'Name' : maxExpenseName, 'Amount' : maxExpenseAmount});
+          }
+        }
+        }
+        
+    }     
+  }

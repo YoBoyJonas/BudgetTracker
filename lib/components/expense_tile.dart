@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:budget_tracker/screens/add_tab.dart';
 import 'package:intl/intl.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
 
@@ -18,6 +19,8 @@ class ExpenseTile extends StatelessWidget {
     required this.dateTime,  
     required this.type,
     });
+
+    
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -85,7 +88,6 @@ class ExpenseTile extends StatelessWidget {
       .collection('Expenses')
       .doc('$formattedDate$suffixExpense')
       .get();
-
     double currentExpense = element2.data()!['Balance'];
     if (symbol == 'plus')
     {
@@ -94,6 +96,8 @@ class ExpenseTile extends StatelessWidget {
       .collection('Expenses')
       .doc('$formattedDate$suffixExpense')
       .update({'Balance' : currentExpense - double.parse(amount)});
+
+      await calculateMaxExpense();
     }
   }
 
