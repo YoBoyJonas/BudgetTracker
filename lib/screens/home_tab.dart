@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:budget_tracker/data/income_expense_data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,10 +36,9 @@ class _HomeTabState extends State<HomeTab> {
                     return const CircularProgressIndicator();
                   }
                   final userSnapshot = snapshot.data?.docs;
-                  
+                 
                   double tempBalance = 0;
                   double tempExpense = 0;
-
 
                   if (userSnapshot!.isNotEmpty) {
                     for (var doc in userSnapshot) {
@@ -156,7 +157,53 @@ class _HomeTabState extends State<HomeTab> {
                 }
               ),
               
-    ),
+          ),
+
+          Container(
+            padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.6), 
+            child: 
+              Container(
+                decoration: BoxDecoration(
+                  color: globals.selectedWidgetColor,
+                  borderRadius: const BorderRadius.vertical(),
+                    border: Border.all(
+                      width: 3,
+                      color: Colors.brown, style: BorderStyle.solid,
+                    )
+                  ),
+                child: Column(
+                  children: [     
+                    Row(
+                      children: [
+                        Expanded(
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: const Text('PRIMINTUKAS', style: TextStyle(color: Colors.blue, letterSpacing: 2, fontSize: 26, fontWeight: FontWeight.bold, decoration: TextDecoration.none))
+                            ),
+                          ),
+                      ],
+                    ),
+
+                    Container(padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.03)),
+                    Row(
+                      children:const [
+                        SizedBox(
+                          child: Text("Daugiausiai išleidai ant", 
+                          style: TextStyle(color: Colors.lightBlue, letterSpacing: 1.5, fontSize: 16, decoration: TextDecoration.none)
+                          
+                          ),
+
+
+                        ),
+                         
+
+
+                      ] 
+                    )
+                  ],
+                )
+              )
+          )
         ],
       )
     );
