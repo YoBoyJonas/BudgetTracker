@@ -175,7 +175,7 @@ class _HomeTabState extends State<HomeTab> {
                   children: [     
                     Row(
                       children: [
-                        Expanded(
+                          Expanded(
                             child: Container(
                               alignment: Alignment.center,
                               child: const Text('PRIMINTUKAS', style: TextStyle(color: Colors.blue, letterSpacing: 2, fontSize: 26, fontWeight: FontWeight.bold, decoration: TextDecoration.none))
@@ -185,20 +185,75 @@ class _HomeTabState extends State<HomeTab> {
                     ),
 
                     Container(padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.03)),
-                    Row(
-                      children:const [
-                        SizedBox(
-                          child: Text("Daugiausiai išleidai ant", 
-                          style: TextStyle(color: Colors.lightBlue, letterSpacing: 1.5, fontSize: 16, decoration: TextDecoration.none)
-                          
-                          ),
-
-
+                    Column(
+                      children: [
+                        Row(
+                          children: const [
+                            Expanded(
+                              child: Center(
+                                child: Text("Daugiausiai išleidai ant ", 
+                                style: TextStyle(color: Colors.lightBlue, letterSpacing: 1.5, fontSize: 16, decoration: TextDecoration.none)
+                                
+                                ),
+                              ),
+                            ),
+                                      
+                          ] 
                         ),
-                         
+                        Container(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  alignment: Alignment.bottomRight,
+                                  child: FutureBuilder<String>(
+                                        future: getMaxName(),
+                                        builder: (context, snapshot){
+                                          if (snapshot.hasData) {
+                                            return Text(
+                                              '${snapshot.data!} ',
+                                              style: const TextStyle(
+                                                color: Colors.redAccent,
+                                                letterSpacing: 1.5,
+                                                fontSize: 17,
+                                                decoration: TextDecoration.none,
+                                              ),
+                                            );
+                                          }
+                                          return const SizedBox();
+                                        },
+                                  ),
+                                ),
+                              ),
+                              
+                              Expanded(
+                                child: FutureBuilder<double>(
+                                  future: getMaxExpense(),
+                                  builder: (context, snapshot){
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        '${snapshot.data!.toString()}\$',
+                                        style: const TextStyle(
+                                          color: Colors.redAccent,
+                                          letterSpacing: 1.5,
+                                          fontSize: 17,
+                                          decoration: TextDecoration.none,
+                                        ),
+                                      );
+                                    }
+                                    return const SizedBox();
+                                  },
+                                ),
+                              ),  
+                        
+                        
+                            ],
+                          ),
+                        ),
 
-
-                      ] 
+                            
+                      ],
                     )
                   ],
                 )
@@ -207,5 +262,17 @@ class _HomeTabState extends State<HomeTab> {
         ],
       )
     );
+  }
+
+  Future<double> getMaxExpense() async{
+    final element = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('202305MaxExpense').get();
+    double maxBalance = element.data()!['Amount'];
+    return maxBalance;
+  }
+
+  Future<String> getMaxName() async{
+    final element = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('202305MaxExpense').get();
+    String maxName = element.data()!['Name'];
+    return maxName;
   }
 }

@@ -36,7 +36,7 @@ class _AddTabState extends State<AddTab> {
   final newIncomeNameController = TextEditingController();
   final newIncomeAmountController = TextEditingController();
 
-  void addNewExpense(String mainText){
+  Future<void> addNewExpense(String mainText) async{
     showDialog(
       barrierDismissible: false,
       context: context, 
@@ -78,7 +78,7 @@ class _AddTabState extends State<AddTab> {
                       alignment: Alignment.centerRight,
                       child: SizedBox(
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection(formatDate(todaysDate, [yyyy, mm])+'income_expense').snapshots(),
+                          stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('${formatDate(todaysDate, [yyyy, mm])}income_expense').snapshots(),
                           builder: (context, snapshot) {
                             List<DropdownMenuItem> expenseItems = [];
           
@@ -194,8 +194,9 @@ class _AddTabState extends State<AddTab> {
             actions:[
               //save button
               MaterialButton(
-                onPressed: () {
-                  save();
+                onPressed: () async {
+                  await save();
+                  calculateMaxExpense();
                   globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                 },
                 child: const Text ('Išsaugoti'),
@@ -213,8 +214,10 @@ class _AddTabState extends State<AddTab> {
         })
       );
   }
+
+  
   //save
-  void save(){
+ Future<void> save()async {
     if (formFieldKey.currentState!.validate() && formFieldKey2.currentState!.validate()) {
       ExpenseItem newExpense = ExpenseItem (
       name: newExpenseNameController.text.toUpperCase(),
@@ -222,16 +225,64 @@ class _AddTabState extends State<AddTab> {
       dateTime: DateTime.now(),
       type: 'Expense',
     );
-    //adds expense to firestore database
-    createExpense(item: newExpense);
 
     Provider.of<ExpenseData>(context, listen: false).addNewExpense(newExpense);
 
     Navigator.pop(context);
+    //adds expense to firestore database
+    await createExpense(item: newExpense);
     clear();
     }
 
   }
+
+  Future<void> calculateMaxExpense() async{
+    final snapshot = await FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('202305income_expense').get();
+    final docList = snapshot.docs;
+    final nameToTotalAmount = <String, double>{};
+
+    for (final doc in docList)
+    {
+      print(doc.data());
+    }
+
+    if (docList.isEmpty){
+      return;
+    }
+    for (final doc in docList)
+    {
+      final name = doc.data()['name'] as String;
+      final amount = double.parse(doc.data()['amount']);
+
+
+      if (nameToTotalAmount.containsKey(name)) {
+        nameToTotalAmount[name] = (nameToTotalAmount[name]! + amount);
+      } else {
+        nameToTotalAmount[name] = amount;
+      }
+    }
+    final maxExpenseName = nameToTotalAmount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+    final maxExpenseAmount = nameToTotalAmount.values.reduce((a, b) => a > b ? a : b);
+
+    var todaysDate = DateTime.now();
+    //formats it into months
+    final today = formatDate(todaysDate, [yyyy, mm]);
+
+    final maxExpenseBalanceDoc = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense').get();
+
+    if (!maxExpenseBalanceDoc.exists) {
+      await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense')
+        .set({'Name' : maxExpenseName, 'Amount' : maxExpenseAmount});
+    } else {
+      final existingAmount = maxExpenseBalanceDoc.data()!['Amount'];
+      if (maxExpenseAmount > existingAmount){
+        await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense')
+          .update({'Name' : maxExpenseName, 'Amount' : maxExpenseAmount});
+      }
+    }
+  }
+
+
 
   void addNewIncome(String mainText){
     showDialog(
