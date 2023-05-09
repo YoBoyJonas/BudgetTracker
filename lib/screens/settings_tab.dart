@@ -314,6 +314,34 @@ Widget build(BuildContext context) {
                   )
                 ),
 
+                // Carry over surplus money setting
+                Container(
+                  margin: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 0),
+                  padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                  decoration: BoxDecoration(
+                    color: globals.selectedWidgetColor,
+                      borderRadius: BorderRadius.circular(70),
+                        border: Border.all(
+                          width: 3,
+                          color: Colors.brown, style: BorderStyle.solid,
+                        )
+                    ),
+                    child: Theme(
+                      data: Theme.of(context).copyWith(canvasColor: Colors.amberAccent),
+                        child: ListTile(
+                        title: const Text("Pinigų perteklių perkelti į kitą mėnesį", style: TextStyle(letterSpacing: 1.5, fontWeight: FontWeight.bold)),
+                          trailing: Switch(
+                            value: globals.carryOverSurplusMoney,
+                            onChanged: (bool value) {
+                              setState(() {
+                                globals.carryOverSurplusMoney = value;
+                              });
+                            },
+                          ),
+                      )
+                    )
+                  ),
+
               ],
           ),
                     

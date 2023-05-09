@@ -73,34 +73,28 @@ class _HomeTabState extends State<HomeTab> {
             ),
             backgroundColor: Colors.transparent,
             body: 
-            StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection(formatDate(todaysDate, [yyyy, mm])+'income_expense').snapshots(),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            FutureBuilder(
+                future: Future.wait([
+                  getMonthData(formatDate(todaysDate.subtract(Duration(days: 30)), [yyyy, mm])),
+                  getMonthData(formatDate(todaysDate, [yyyy, mm])),
+                ]),
+                builder: (context, AsyncSnapshot<List<Map<String, double>>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
                   }
-                  final userSnapshot = snapshot.data?.docs;
-                 
-                  double tempBalance = 0;
-                  double tempExpense = 0;
+                  
+                  double previousMonthBalance = snapshot.data![0]['balance']!;
+                  double currentMonthBalance = snapshot.data![1]['balance']!;
+                  double currentMonthExpense = snapshot.data![1]['expense']!;
 
-                  if (userSnapshot!.isNotEmpty) {
-                    for (var doc in userSnapshot) {
-                      //gets date from document
-                      var date = doc["dateTime"].toDate();
-                      final month = formatDate(date, [yyyy, mm]);
-                      //checks if data from document is from this month
-                      if(doc["type"] == 'Income'){
-                        tempBalance += double.parse(doc["amount"]);
-                      }
-                      else if(doc["type"] == 'Expense'){
-                        tempBalance -= double.parse(doc["amount"]);
-                        tempExpense += double.parse(doc["amount"]);
-                      }
-                    }
+                  if (globals.carryOverSurplusMoney && previousMonthBalance > 0){
+                    totalBalance = previousMonthBalance + currentMonthBalance;
+                  } else {
+                    totalBalance = currentMonthBalance;
                   }
-                  totalBalance = tempBalance;
-                  totalExpenses = tempExpense;
+                  totalExpenses = currentMonthExpense;
+
+
                   return ListView(
                     children:[
                       Row(
@@ -332,6 +326,28 @@ class _HomeTabState extends State<HomeTab> {
 
     return result['nickName'] ?? 'User';
   }
+
+  Future<Map<String, double>> getMonthData(String month) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection(uid)
+        .doc('income_expense')
+        .collection(month + 'income_expense')
+        .get();
+
+    double tempBalance = 0;
+    double tempExpense = 0;
+
+    for (var doc in querySnapshot.docs) {
+      if (doc["type"] == 'Income') {
+        tempBalance += double.parse(doc["amount"]);
+      } else if (doc["type"] == 'Expense') {
+        tempBalance -= double.parse(doc["amount"]);
+        tempExpense += double.parse(doc["amount"]);
+      }
+    }
+
+    return {'balance': tempBalance, 'expense': tempExpense};
+}
 
   Future<double> getMaxExpense() async{
     final element = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('202305MaxExpense').get();

@@ -38,3 +38,5 @@ enum SoundEffect {
   tabTransition
 }
 bool soundEnabled = true;
+
+bool carryOverSurplusMoney = false;
