@@ -27,6 +27,50 @@ class _HomeTabState extends State<HomeTab> {
       home: Stack(
         children: [
           Scaffold(
+              appBar: AppBar(
+                title: FutureBuilder<String>(
+                  future: getUserNickName(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else {
+                      return Text(
+                        'Labas, ${snapshot.data}!',
+                          style: const TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                            color: Colors.blue,
+                            decoration: TextDecoration.none,
+                          ),
+                        );
+                    }
+                  }
+                ),
+                flexibleSpace: Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.green,
+                        globals.selectedWidgetColor,
+                        globals.selectedWidgetColor,
+                        Colors.red,
+                      ],
+                      stops: const [0.0, 0.2, 0.8, 1.0],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      tileMode: TileMode.clamp,
+                    ),
+                    border: const Border(
+                      bottom: BorderSide(
+                        color: Colors.brown,
+                        width: 3,
+                      ),
+                    ),
+                  ),
+                ),
+              centerTitle: true,
+            ),
             backgroundColor: Colors.transparent,
             body: 
             StreamBuilder<QuerySnapshot>(
@@ -278,6 +322,15 @@ class _HomeTabState extends State<HomeTab> {
         ],
       )
     );
+  }
+
+  Future<String> getUserNickName() async {
+    DocumentSnapshot result = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(uid)
+      .get();
+
+    return result['nickName'] ?? 'User';
   }
 
   Future<double> getMaxExpense() async{
