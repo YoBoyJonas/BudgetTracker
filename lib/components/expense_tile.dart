@@ -49,12 +49,37 @@ class ExpenseTile extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {
-              removeData(amount,dateTime,name,type);
-              type == 'Income' ? changeTheBalanceField(dateTime, amount, 'minus') : changeTheBalanceField(dateTime, amount, 'plus');
-            },
-            icon: const Icon(Icons.close),
-          ),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Patvirtinkite ištrinimą!"),
+                  content: const Text("Ar tikrai norite ištrinti šį elementą?"),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Atšaukti'),
+                      child: const Text("Atšaukti", style: TextStyle(color: Colors.red, fontSize: 20)),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        removeData(amount, dateTime, name, type);
+                        type == 'Income'
+                            ? changeTheBalanceField(
+                                dateTime, amount, 'minus')
+                            : changeTheBalanceField(
+                                dateTime, amount, 'plus');
+                        Navigator.pop(context, 'Tęsti');
+                      },
+                      child: const Text("Tęsti", style: TextStyle(color: Colors.green, fontSize: 20)),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          icon: const Icon(Icons.close),
+        ),
         ],
       ),
     );
