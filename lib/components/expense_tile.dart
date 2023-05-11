@@ -42,12 +42,12 @@ class ExpenseTile extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 name,
-                style: TextStyle(color: type == 'Income' ? Colors.green : Colors.red,fontWeight: FontWeight.bold,letterSpacing: 1.5,fontSize: 20,),
+                style: TextStyle(color: type == 'Income' ? Colors.green : Colors.red,fontWeight: FontWeight.bold,letterSpacing: 1.5,fontSize: 17),
               ),
               subtitle: Text(
                 '${dateTime.day.toString().padLeft(2,"0")}/${dateTime.month.toString().padLeft(2,"0")}/${dateTime.year} ${dateTime.hour.toString().padLeft(2, "0")}:${dateTime.minute.toString().padLeft(2,"0")}',
               ),
-              trailing: Text('\$ $amount',style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 25,),),
+              trailing: Text('\$ $amount',style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 22)),
             ),
           ),
           IconButton(

@@ -126,7 +126,7 @@ class _AddTabState extends State<AddTab> {
                               if (category['status'] == 'Active'){
                                 expenseItems.add(DropdownMenuItem(
                                   value: category.id,
-                                  child: Text(category['category'], style: const TextStyle(color: Colors.red, letterSpacing: 0.25, fontWeight: FontWeight.bold, fontSize: 12),),
+                                  child: Text(category['category'], style: const TextStyle(color: Colors.red, letterSpacing: 0.25, fontWeight: FontWeight.bold, fontSize: 12), overflow: TextOverflow.ellipsis, maxLines: 2,),
                                 ));
                               }
                             }
@@ -149,6 +149,7 @@ class _AddTabState extends State<AddTab> {
                                 selectedCategory = categoryValue!;
                                 });
                               },
+                              
                               value: selectedCategory,
                               isExpanded: true,
                             );
@@ -325,7 +326,7 @@ class _AddTabState extends State<AddTab> {
                                   if (category['status'] == 'Active'){
                                     incomeItems.add(DropdownMenuItem(
                                       value: category.id,
-                                      child: Text(category['category'], style: const TextStyle(color: Colors.green, letterSpacing: 0.25, fontWeight: FontWeight.bold, fontSize: 12),),
+                                      child: Text(category['category'], style: const TextStyle(color: Colors.green, letterSpacing: 0.25, fontWeight: FontWeight.bold, fontSize: 12), overflow: TextOverflow.ellipsis, maxLines: 2),
                                     ));
                                   }
                                 }
