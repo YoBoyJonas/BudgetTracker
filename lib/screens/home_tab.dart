@@ -59,10 +59,10 @@ class _HomeTabState extends State<HomeTab> {
                       end: Alignment.centerRight,
                       tileMode: TileMode.clamp,
                     ),
-                    border: const Border(
+                    border: Border(
                       bottom: BorderSide(
                         color: Colors.brown,
-                        width: 3,
+                        width: MediaQuery.of(context).size.width * 0.007,
                       ),
                     ),
                   ),
@@ -302,9 +302,7 @@ class _HomeTabState extends State<HomeTab> {
                               ),                
                             ],
                           ),
-                        ),
-
-                            
+                        ),                    
                       ],
                     )
                   ],

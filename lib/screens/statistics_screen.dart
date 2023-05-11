@@ -53,7 +53,7 @@ class _StatisticsScreen extends State<StatisticsScreen> {
                   }
         return Center(
           child: SizedBox(
-          height: 400,
+          height: MediaQuery.of(context).size.width * 0.93,
           child: MyBarGraph(weeklySummary: summary,)
           ),
           );

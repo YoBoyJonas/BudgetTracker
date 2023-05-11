@@ -49,7 +49,7 @@ class _AddTabState extends State<AddTab> {
             Row(
               children: [
                 SizedBox(
-                  width: 170.0,
+                  width: MediaQuery.of(context).size.width * 0.42,
                   child: TextFormField(
                     key: formFieldKey,
                     controller: newExpenseNameController,
@@ -68,97 +68,96 @@ class _AddTabState extends State<AddTab> {
                   ),
                 ),
           
-              const SizedBox(width: 20),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.04),
           
-                    Flexible(child: Container(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('${formatDate(todaysDate, [yyyy, mm])}income_expense').snapshots(),
-                          builder: (context, snapshot) {
-                            List<DropdownMenuItem> expenseItems = [];
-          
-                            if (!snapshot.hasData) {
-                              return const CircularProgressIndicator();
-                            } else {
-                              final categories = snapshot.data?.docs.reversed.toList();
-                                    
-                              for (var category in categories!) {
-                                if (category['type'] == "Expense") {
-                                  bool isCategoryExists = false;
-                                  for (var expense in expenseItems) {
-                                    if ((expense.child as Text).data!.toLowerCase() == category['name'].toLowerCase()
-                                     && (expense.child as Text).data!.toLowerCase() !="category") {
-                                      isCategoryExists = true;
-                                      break;
-                                    }
-                                  }
-                                  if (!isCategoryExists) {
-                                    var nameText = category['name'].toString().toUpperCase();
-                                    expenseItems.add(DropdownMenuItem(
-                                      value: category.id,
-                                      child: Text(nameText),
-                                    ));
-          
-                                    // Add unique category to 'Expense_Categories' collection
-                                    FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').where('category',
-                                      isEqualTo: category['name']).get().then((value) {
-                                      if (value.size == 0) {
-                                        FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').add({
-                                          'category': category['name'],
-                                          'status': 'Active'                                    
-                                          });
-                                      }
-                                    });
-                                  }
+                Flexible(child: Container(
+                  alignment: Alignment.centerRight,
+                  child: SizedBox(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('${formatDate(todaysDate, [yyyy, mm])}income_expense').snapshots(),
+                      builder: (context, snapshot) {
+                        List<DropdownMenuItem> expenseItems = [];
+      
+                        if (!snapshot.hasData) {
+                          return const CircularProgressIndicator();
+                        } else {
+                          final categories = snapshot.data?.docs.reversed.toList();
+                                
+                          for (var category in categories!) {
+                            if (category['type'] == "Expense") {
+                              bool isCategoryExists = false;
+                              for (var expense in expenseItems) {
+                                if ((expense.child as Text).data!.toLowerCase() == category['name'].toLowerCase()
+                                  && (expense.child as Text).data!.toLowerCase() !="category") {
+                                  isCategoryExists = true;
+                                  break;
                                 }
                               }
-                            }                   
-                            return StreamBuilder<QuerySnapshot>(
-                              stream: FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').snapshots(),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) return const CircularProgressIndicator();
-          
-                                var categoryDocs = snapshot.data!.docs;
-                                var expenseItems = [      const DropdownMenuItem(value: "0", child: Text("Kategorija"))    ];
-                                for (var i = 0; i < categoryDocs.length; i++) {
-                                  var category = categoryDocs[i];
-                                  if (category['status'] == 'Active'){
-                                    expenseItems.add(DropdownMenuItem(
-                                      value: category.id,
-                                      child: Text(category['category'], style: const TextStyle(color: Colors.red, letterSpacing: 0.25, fontWeight: FontWeight.bold, fontSize: 12),),
-                                    ));
+                              if (!isCategoryExists) {
+                                var nameText = category['name'].toString().toUpperCase();
+                                expenseItems.add(DropdownMenuItem(
+                                  value: category.id,
+                                  child: Text(nameText),
+                                ));
+      
+                                // Add unique category to 'Expense_Categories' collection
+                                FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').where('category',
+                                  isEqualTo: category['name']).get().then((value) {
+                                  if (value.size == 0) {
+                                    FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').add({
+                                      'category': category['name'],
+                                      'status': 'Active'                                    
+                                      });
                                   }
+                                });
+                              }
+                            }
+                          }
+                        }                   
+                        return StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').snapshots(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) return const CircularProgressIndicator();
+      
+                            var categoryDocs = snapshot.data!.docs;
+                            var expenseItems = [      const DropdownMenuItem(value: "0", child: Text("Kategorija"))    ];
+                            for (var i = 0; i < categoryDocs.length; i++) {
+                              var category = categoryDocs[i];
+                              if (category['status'] == 'Active'){
+                                expenseItems.add(DropdownMenuItem(
+                                  value: category.id,
+                                  child: Text(category['category'], style: const TextStyle(color: Colors.red, letterSpacing: 0.25, fontWeight: FontWeight.bold, fontSize: 12),),
+                                ));
+                              }
+                            }
+      
+                            return DropdownButton(
+                              items: expenseItems, 
+                              onChanged: (categoryValue) async {
+                                globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                                if (categoryValue == "0") {
+                                  newExpenseNameController.text = "";
                                 }
-          
-                                return DropdownButton(
-                                  items: expenseItems, 
-                                  onChanged: (categoryValue) async {
-                                    globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
-                                    if (categoryValue == "0") {
-                                      newExpenseNameController.text = "";
-                                    }
-          
-                                    var categoryDoc = await FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').doc(categoryValue).get();
-                                    if (categoryDoc.exists) {
-                                      var categoryName = categoryDoc.data()!['category'].toUpperCase();
-                                      newExpenseNameController.text = categoryName;
-                                    }
-          
-                                    setState(() {
-                                    selectedCategory = categoryValue!;
-                                    });
-                                  },
-                                  value: selectedCategory,
-                                  isExpanded: true,
-                                );
+      
+                                var categoryDoc = await FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').doc(categoryValue).get();
+                                if (categoryDoc.exists) {
+                                  var categoryName = categoryDoc.data()!['category'].toUpperCase();
+                                  newExpenseNameController.text = categoryName;
+                                }
+      
+                                setState(() {
+                                selectedCategory = categoryValue!;
+                                });
                               },
+                              value: selectedCategory,
+                              isExpanded: true,
                             );
-                            
                           },
-                        ),
-                      ),
-                    )),
+                        );
+                      },
+                    ),
+                  ),
+                )),
               ],
             ),
           
@@ -248,7 +247,7 @@ class _AddTabState extends State<AddTab> {
               Row(
                 children: [
                   SizedBox(
-                    width: 170,
+                    width: MediaQuery.of(context).size.width * 0.42,
                     child: TextFormField(
                       key: formFieldKey,
                       controller: newIncomeNameController,
@@ -268,7 +267,7 @@ class _AddTabState extends State<AddTab> {
                     ),
                   ),
 
-                  const SizedBox(width: 20),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.04),
 
                   Flexible(child: Container(
                       alignment: Alignment.centerRight,
@@ -503,8 +502,8 @@ class _AddTabState extends State<AddTab> {
                 Container(  
                   //alignment: Alignment.bottomRight,
                   margin: const EdgeInsets.all(25),
-                  width: 120,
-                  height: 60,  
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  height: MediaQuery.of(context).size.width * 0.15,
                   child: OutlinedButton(
                     onPressed: () { 
                       globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
@@ -512,9 +511,7 @@ class _AddTabState extends State<AddTab> {
                     }, 
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(70.0)),
-                      side: const BorderSide(
-                        color: Colors.brown, style: BorderStyle.solid, width: 3
-                        ),
+                      side: BorderSide(color: Colors.brown, style: BorderStyle.solid, width: MediaQuery.of(context).size.width * 0.007),
                       backgroundColor: globals.selectedWidgetColor          
                     ),                   
                     child: const Text('Išlaidos', style: TextStyle(fontSize: 20.0,color: Colors.red, fontWeight: FontWeight.bold)),
@@ -527,9 +524,8 @@ class _AddTabState extends State<AddTab> {
                 Container( 
                   //alignment: Alignment.centerRight, 
                   margin: const EdgeInsets.all(25),
-                  width: 120,
-                  height: 60,
-                     
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  height: MediaQuery.of(context).size.width * 0.15,             
                   child: OutlinedButton(  
                     onPressed: () {
                       globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
@@ -537,7 +533,7 @@ class _AddTabState extends State<AddTab> {
                     },
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(70.0)),
-                      side: const BorderSide(color: Colors.brown, style: BorderStyle.solid, width: 3),
+                      side: BorderSide(color: Colors.brown, style: BorderStyle.solid, width: MediaQuery.of(context).size.width * 0.007),
                       backgroundColor: globals.selectedWidgetColor                     
                     ),  
                     child: const Text('Pajamos', style: TextStyle(fontSize: 20.0, color: Colors.green, fontWeight: FontWeight.bold),),      

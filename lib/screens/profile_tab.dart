@@ -92,7 +92,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         color: globals.selectedWidgetColor,
                         borderRadius: BorderRadius.circular(70),
                                 border: Border.all(
-                                  width: 3,
+                                  width: MediaQuery.of(context).size.width * 0.007,
                                   color: Colors.brown, style: BorderStyle.solid,
                                 )
                       ),
@@ -110,7 +110,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         color: globals.selectedWidgetColor,
                         borderRadius: BorderRadius.circular(70),
                                 border: Border.all(
-                                  width: 3,
+                                  width: MediaQuery.of(context).size.width * 0.007,
                                   color: Colors.brown, style: BorderStyle.solid,
                                 )
                       ),
@@ -129,7 +129,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         color: globals.selectedWidgetColor,
                         borderRadius: BorderRadius.circular(70),
                                 border: Border.all(
-                                  width: 3,
+                                  width: MediaQuery.of(context).size.width * 0.007,
                                   color: Colors.brown, style: BorderStyle.solid,
                                 )
                       ),

@@ -66,7 +66,7 @@ Widget build(BuildContext context) {
                             color: globals.selectedWidgetColor,
                             borderRadius: BorderRadius.circular(70),
                                     border: Border.all(
-                                      width: 3,
+                                      width: MediaQuery.of(context).size.width * 0.007,
                                       color: Colors.brown, style: BorderStyle.solid,
                                     )
                             ),
@@ -96,7 +96,7 @@ Widget build(BuildContext context) {
                                 color: globals.selectedWidgetColor,
                                 borderRadius: BorderRadius.circular(70),
                                         border: Border.all(
-                                          width: 3,
+                                          width: MediaQuery.of(context).size.width * 0.007,
                                           color: Colors.brown, style: BorderStyle.solid,
                                         )
                               ),
@@ -187,7 +187,7 @@ Widget build(BuildContext context) {
                                 color: globals.selectedWidgetColor,
                                 borderRadius: BorderRadius.circular(70),
                                         border: Border.all(
-                                          width: 3,
+                                          width: MediaQuery.of(context).size.width * 0.007,
                                           color: Colors.brown, style: BorderStyle.solid,
                                         )
                               ),
@@ -236,7 +236,7 @@ Widget build(BuildContext context) {
                   ),   
                 
                 // Šis SizedBox skiria anksčiau esantį setting'ą nuo sekančio setting'o, kad nesusilietų widget'ai
-                const SizedBox(height: 10,),
+                SizedBox(height: MediaQuery.of(context).size.width * 0.026),
             
                 // Trečiasis setting'as susijęs su background pasirinkimu ir dropdown listu su background option'ais
                 Container(
@@ -245,7 +245,7 @@ Widget build(BuildContext context) {
                     color: globals.selectedWidgetColor,
                     borderRadius: BorderRadius.circular(70),
                       border: Border.all(
-                        width: 3,
+                        width: MediaQuery.of(context).size.width * 0.007,
                         color: Colors.brown, style: BorderStyle.solid,
                       )
                     ),
@@ -299,7 +299,7 @@ Widget build(BuildContext context) {
                     color: globals.selectedWidgetColor,
                       borderRadius: BorderRadius.circular(70),
                         border: Border.all(
-                          width: 3,
+                          width: MediaQuery.of(context).size.width * 0.007,
                           color: Colors.brown, style: BorderStyle.solid,
                         )
                     ),
@@ -327,7 +327,7 @@ Widget build(BuildContext context) {
                       color: globals.selectedWidgetColor,
                         borderRadius: BorderRadius.circular(70),
                           border: Border.all(
-                            width: 3,
+                            width: MediaQuery.of(context).size.width * 0.007,
                             color: Colors.brown, style: BorderStyle.solid,
                           )
                       ),
@@ -416,7 +416,7 @@ Widget build(BuildContext context) {
                       color: globals.selectedWidgetColor,
                       borderRadius: BorderRadius.circular(70),
                       border: Border.all(
-                        width: 3,
+                        width: MediaQuery.of(context).size.width * 0.007,
                         color: Colors.brown, 
                         style: BorderStyle.solid,
                       ),
@@ -431,7 +431,8 @@ Widget build(BuildContext context) {
                             fontSize: 18,
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.025),
+
                         Expanded(
                           child: Theme(
                             data: Theme.of(context).copyWith(canvasColor: Colors.amberAccent),
