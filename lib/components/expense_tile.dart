@@ -39,6 +39,8 @@ class ExpenseTile extends StatelessWidget {
           Expanded(
             child: ListTile(
               title: Text(
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 name,
                 style: TextStyle(color: type == 'Income' ? Colors.green : Colors.red,fontWeight: FontWeight.bold,letterSpacing: 1.5,fontSize: 20,),
               ),

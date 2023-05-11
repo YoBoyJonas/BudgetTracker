@@ -106,7 +106,7 @@ class _HomeTabState extends State<HomeTab> {
                                   color: globals.selectedWidgetColor,
                                   borderRadius: BorderRadius.circular(70),
                                   border: Border.all(
-                                    width: 3,
+                                    width: MediaQuery.of(context).size.width * 0.007,
                                     color: Colors.brown, style: BorderStyle.solid,
                                   )
                                 ),
@@ -149,7 +149,7 @@ class _HomeTabState extends State<HomeTab> {
                                     color: globals.selectedWidgetColor,
                                     borderRadius: BorderRadius.circular(70),
                                     border: Border.all(
-                                      width: 3,
+                                      width: MediaQuery.of(context).size.width * 0.007,
                                       color: Colors.brown, style: BorderStyle.solid,
                                     )
                                   ),
@@ -182,14 +182,10 @@ class _HomeTabState extends State<HomeTab> {
                                 ),
                               ),
                             ),
-
                         ],
                       ),
                     ]
                   );
-
-
-
                 }
               ),
               
@@ -203,7 +199,7 @@ class _HomeTabState extends State<HomeTab> {
                   color: globals.selectedWidgetColor,
                   borderRadius: const BorderRadius.vertical(),
                     border: Border.all(
-                      width: 3,
+                      width: MediaQuery.of(context).size.width * 0.007,
                       color: Colors.brown, style: BorderStyle.solid,
                     )
                   ),
@@ -221,94 +217,154 @@ class _HomeTabState extends State<HomeTab> {
                     ),
 
                     Container(padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.03)),
-                    Column(
-                      children: [
-                        Row(
-                          children: const [
-                            Expanded(
-                              child: Center(
-                                child: Text("Daugiausiai išleidai ant ", 
-                                style: TextStyle(color: Colors.lightBlue, letterSpacing: 1.5, fontSize: 16, decoration: TextDecoration.none)                             
-                                ),
+                      Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.02),
+                            child: RichText(
+                              text: const TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Daugiausiai išleista: ", 
+                                    style: TextStyle(color: Colors.blue, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)        
+                                  ),
+                                ],
+
+                              ),
                               ),
                             ),
-                          ] 
-                        ),
-                        Container(
-                          padding: const EdgeInsets.only(top: 5),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  alignment: Alignment.bottomRight,
-                                  child: FutureBuilder<String>(
-                                        future: getMaxName(),
-                                        builder: (context, snapshot){
-                                          if (snapshot.hasData) {
-                                            return Text(
-                                              '${snapshot.data!} ',
-                                              style: const TextStyle(
-                                                color: Colors.redAccent,
-                                                letterSpacing: 1.5,
-                                                fontSize: 17,
-                                                decoration: TextDecoration.none,
-                                              ),
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return const Text(
-                                            "Duomenų ",
-                                            style: TextStyle(
-                                              color: Colors.red,
-                                              letterSpacing: 1.5,
-                                              fontSize: 16,
-                                              decoration: TextDecoration.none,
-                                            )
-                                            );
-                                          }
-                                          return const SizedBox();
-                                        },
-                                  ),
-                                ),
-                              ),
-                              
-                              Expanded(
-                                child: FutureBuilder<double>(
-                                  future: getMaxExpense(),
-                                  builder: (context, snapshot){
-                                    if (snapshot.hasData) {
-                                      return Text(
-                                        '${snapshot.data!.toString()}\$',
-                                        style: const TextStyle(
-                                          color: Colors.redAccent,
-                                          letterSpacing: 1.5,
-                                          fontSize: 17,
-                                          decoration: TextDecoration.none,
+                        ]
+                      ),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.007, left: MediaQuery.of(context).size.width * 0.02),
+                            child: FutureBuilder<String>(
+                              future: getMaxName(),
+                              builder: (context, snapshot){
+                                if (snapshot.hasData) {
+                                  return Row(
+                                    children: [
+                                      const Text(
+                                        'išlaida ',
+                                        style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.none,
                                         ),
-                                      );
-                                    } else if (snapshot.hasError) {
-                                        return const Text(
-                                        "nerasta",
-                                        style: TextStyle(
-                                          color: Colors.red,
-                                          letterSpacing: 1.5,
-                                          fontSize: 16,
-                                          decoration: TextDecoration.none,
-                                        )
-                                        );
-                                      }
-                                    return const SizedBox();
-                                  },
-                                ),
-                              ),                
-                            ],
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          snapshot.data!,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                            fontSize: 16,
+                                            decoration: TextDecoration.none
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+
+                                } else if (snapshot.hasError) {
+                                  return Row(
+                                    children: const [
+                                      Text(
+                                        'išlaida ',
+                                        style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.none,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          'neturite išlaidų!',
+                                          style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                            fontSize: 16,
+                                            decoration: TextDecoration.none
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }
+                                return const SizedBox();
+                              },
+                            ),
                           ),
-                        ),                    
+                        ),
                       ],
+                    ),
+                      
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                          padding: EdgeInsets.only(top: MediaQuery.of(context).size.width * 0.012, left: MediaQuery.of(context).size.width * 0.02),
+                            child: FutureBuilder<double>(
+                              future: getMaxExpense(),
+                              builder: (context, snapshot){
+                                if (snapshot.hasData) {
+                                  return Row(
+                                      children: [
+                                        const Text(
+                                          'išleista ',
+                                          style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          decoration: TextDecoration.none,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            '${snapshot.data!.toString()} \$',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                              fontSize: 16,
+                                              decoration: TextDecoration.none
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                } else if (snapshot.hasError) {
+                                    return Row(
+                                      children: const [
+                                        Text(
+                                          'išleista ',
+                                          style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          decoration: TextDecoration.none,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'neturite išlaidų!',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                              fontSize: 16,
+                                              decoration: TextDecoration.none
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                return const SizedBox();
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ), 
+                        ],                                                  
                     )
-                  ],
-                )
+                ),
+              
               )
-          )
         ],
       )
     );
