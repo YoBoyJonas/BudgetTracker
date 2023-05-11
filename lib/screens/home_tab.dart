@@ -248,7 +248,7 @@ class _HomeTabState extends State<HomeTab> {
                                   return Row(
                                     children: [
                                       const Text(
-                                        'išlaida ',
+                                        'išlaida  ',
                                         style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                         decoration: TextDecoration.none,
