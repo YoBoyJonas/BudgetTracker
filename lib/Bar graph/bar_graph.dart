@@ -48,7 +48,7 @@ myBarData.initializeBarData();
                 color: globals.selectedWidgetColor,
                 width: 25,
                 borderRadius: BorderRadius.circular(4),
-                borderSide: BorderSide(width: 3, color: Colors.brown),
+                borderSide: const BorderSide(width: 3, color: Colors.brown),
               ),
             ],
           ),
@@ -99,10 +99,10 @@ myBarData.initializeBarData();
         text = Text(today.toString(), style: style,);
         break;
       default:
-        text = Text('00', style: style,);
+        text = const Text('00', style: style,);
         break;
     }
-    return SideTitleWidget(child: text, axisSide: meta.axisSide);
+    return SideTitleWidget(axisSide: meta.axisSide, child: text);
   }
   Widget getLeftTitles(double value, TitleMeta meta) {
   const style = TextStyle(
@@ -119,8 +119,8 @@ myBarData.initializeBarData();
     ),
   );
   return SideTitleWidget(
-    child: text,
     axisSide: meta.axisSide,
+    child: text,
   );
 }
 }

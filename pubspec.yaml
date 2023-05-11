@@ -22,6 +22,7 @@ dependencies:
   fl_chart: ^0.60.0
   provider:
   jiffy: ^5.0.0
+  logger: ^1.3.0
 
 dev_dependencies:
   flutter_test:

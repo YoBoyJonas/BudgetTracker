@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:budget_tracker/storage_service.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
-import 'dart:io';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({Key? key}) : super(key: key);
@@ -21,7 +20,6 @@ class _ProfileTabState extends State<ProfileTab> {
   UserModel userModel = UserModel(nickName: "", imageUrl: "");
   final TextEditingController _nickNameController = TextEditingController();
   final Storage storage = Storage();
-  File? _image;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +42,6 @@ class _ProfileTabState extends State<ProfileTab> {
       final fileName = "$uid.$fileExtension";
       String imageUrl = await storage.uploadFile(pickedFile.path, fileName);
       setState(() {
-        _image = File(pickedFile.path);
         userModel.imageUrl = imageUrl;
       });
 
@@ -68,7 +65,7 @@ class _ProfileTabState extends State<ProfileTab> {
           radius: 95,
           backgroundImage: userModel.imageUrl != ""
               ? NetworkImage(userModel.imageUrl)
-              : AssetImage('assets/images/default_profile.png')
+              : const AssetImage('assets/images/default_profile.png')
                   as ImageProvider<Object>,
           backgroundColor: Colors.green,
         ),
@@ -118,7 +115,7 @@ class _ProfileTabState extends State<ProfileTab> {
                                 )
                       ),
                       child: Text(
-                        // may run into a crash. TODO: find alternative to question mark syntax
+                        // may run into a crash.
                         "Created: ${DateFormat('yyyy-MM-dd').format(userAuth?.metadata.creationTime as DateTime)}",
                         style: const TextStyle(fontSize: 20,),
                       ),
@@ -152,7 +149,7 @@ class _ProfileTabState extends State<ProfileTab> {
               ],
             );
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         });
   }
@@ -176,7 +173,7 @@ class _ProfileTabState extends State<ProfileTab> {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
-          return Container(
+          return SizedBox(
               height: MediaQuery.of(context).size.height,
               child: Padding(
                 padding: const EdgeInsets.only(left: 15.0, top: 15.0),

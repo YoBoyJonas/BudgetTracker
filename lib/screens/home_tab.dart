@@ -1,6 +1,4 @@
-import 'dart:ffi';
 
-import 'package:budget_tracker/data/income_expense_data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -75,7 +73,7 @@ class _HomeTabState extends State<HomeTab> {
             body: 
             FutureBuilder(
                 future: Future.wait([
-                  getMonthData(formatDate(todaysDate.subtract(Duration(days: 30)), [yyyy, mm])),
+                  getMonthData(formatDate(todaysDate.subtract(const Duration(days: 30)), [yyyy, mm])),
                   getMonthData(formatDate(todaysDate, [yyyy, mm])),
                 ]),
                 builder: (context, AsyncSnapshot<List<Map<String, double>>> snapshot) {
@@ -331,7 +329,7 @@ class _HomeTabState extends State<HomeTab> {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection(uid)
         .doc('income_expense')
-        .collection(month + 'income_expense')
+        .collection('${month}income_expense')
         .get();
 
     double tempBalance = 0;

@@ -1,13 +1,9 @@
-
 import 'package:budget_tracker/components/expense_tile.dart';
 import 'package:budget_tracker/models/expense_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:budget_tracker/data/income_expense_data.dart';
 import 'package:provider/provider.dart';
 import 'package:date_format/date_format.dart';
@@ -233,7 +229,6 @@ class _AddTabState extends State<AddTab> {
     await createExpense(item: newExpense);
     clear();
     }
-
   }
 
   
@@ -279,7 +274,7 @@ class _AddTabState extends State<AddTab> {
                       alignment: Alignment.centerRight,
                       child: SizedBox(
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection(formatDate(todaysDate, [yyyy, mm])+'income_expense').snapshots(),
+                          stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('${formatDate(todaysDate, [yyyy, mm])}income_expense').snapshots(),
                           builder: (context, snapshot) {
                             List<DropdownMenuItem> incomeItems = [];
           
@@ -478,7 +473,7 @@ class _AddTabState extends State<AddTab> {
           body: Column(
             children:[
               StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection(formatDate(todaysDate, [yyyy, mm])+'income_expense').snapshots(),
+                stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('${formatDate(todaysDate, [yyyy, mm])}income_expense').snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -486,12 +481,12 @@ class _AddTabState extends State<AddTab> {
                   final userSnapshot = snapshot.data?.docs;
 
                   return Expanded ( child: Container(
-                    padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                     child: ListView.builder(
                         scrollDirection: Axis.vertical, 
                         itemCount: userSnapshot?.length,
                         itemBuilder: (context, index) => Container(
-                          padding: EdgeInsets.only(top: 5),
+                          padding: const EdgeInsets.only(top: 5),
                           child: ExpenseTile(
                             name: userSnapshot![index]["name"],
                             amount: userSnapshot[index]["amount"], 
@@ -566,11 +561,11 @@ class _AddTabState extends State<AddTab> {
     var todaysDate = DateTime.now();
     //formats it into months
     final today = formatDate(todaysDate, [yyyy, mm]);
-    final docLedger = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('$today'+'income_expense').doc();
-    final balance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$today'+'Balance');
-    final expenseBalance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'Expense');
-    final expenseBalanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'Expense').get();
-    final balanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$today'+'Balance').get();
+    final docLedger = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('$today''income_expense').doc();
+    final balance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$today''Balance');
+    final expenseBalance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''Expense');
+    final expenseBalanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''Expense').get();
+    final balanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$today''Balance').get();
 
     final json = {
       'name': item.name,
@@ -657,7 +652,7 @@ Future<void> calculateMaxExpense() async{
     final today = formatDate(todaysDate, [yyyy, mm]);
     
     if (docList.isEmpty){
-      await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense')
+      await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''MaxExpense')
             .set({'Name' : 0, 'Amount' : 0});
       return;
     }
@@ -678,15 +673,15 @@ Future<void> calculateMaxExpense() async{
         final maxExpenseName = nameToTotalAmount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
         final maxExpenseAmount = nameToTotalAmount.values.reduce((a, b) => a > b ? a : b);
 
-        final maxExpenseBalanceDoc = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense').get();
+        final maxExpenseBalanceDoc = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''MaxExpense').get();
 
         if (!maxExpenseBalanceDoc.exists) {
-          await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense')
+          await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''MaxExpense')
             .set({'Name' : maxExpenseName, 'Amount' : maxExpenseAmount});
         } else {
           final existingAmount = maxExpenseBalanceDoc.data()!['Amount'];
           if (maxExpenseAmount > existingAmount){
-            await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today'+'MaxExpense')
+            await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''MaxExpense')
               .update({'Name' : maxExpenseName, 'Amount' : maxExpenseAmount});
           }
         }

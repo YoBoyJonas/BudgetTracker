@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:logger/logger.dart';
 
 class Storage {
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+  final Logger _logger = Logger();
 
   Future<String> uploadFile(
     String filePath,
@@ -20,7 +21,7 @@ class Storage {
         downloadURL = await taskSnapshot.ref.getDownloadURL();
       });
     } on FirebaseException catch (e) {
-      print(e);
+        _logger.e(e.toString());
     }
 
     return downloadURL;

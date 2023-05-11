@@ -1,7 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
@@ -80,165 +77,162 @@ Widget build(BuildContext context) {
                   ),
             
                   // Antrasis settings buttonas leidziantis isnaikinti išsaugotą kategoriją
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.42,
-                          padding: const EdgeInsets.only(left: 10),
-                          child: FutureBuilder<QuerySnapshot>(
-                            future: FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').get(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              }
-                              final categories = snapshot.data?.docs.reversed.toList();
-                              final activeCategories = categories?.where((category) => category['status'] == 'Active').toList();
-                              return Container(
-                                decoration: BoxDecoration(
-                                  color: globals.selectedWidgetColor,
-                                  borderRadius: BorderRadius.circular(70),
-                                          border: Border.all(
-                                            width: 3,
-                                            color: Colors.brown, style: BorderStyle.solid,
-                                          )
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.42,
+                        padding: const EdgeInsets.only(left: 10),
+                        child: FutureBuilder<QuerySnapshot>(
+                          future: FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Expense_Categories').get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
+                            final categories = snapshot.data?.docs.reversed.toList();
+                            final activeCategories = categories?.where((category) => category['status'] == 'Active').toList();
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: globals.selectedWidgetColor,
+                                borderRadius: BorderRadius.circular(70),
+                                        border: Border.all(
+                                          width: 3,
+                                          color: Colors.brown, style: BorderStyle.solid,
+                                        )
+                              ),
+                              child: Theme(
+                                data: Theme.of(context).copyWith(
+                                  canvasColor: globals.selectedWidgetColor,
                                 ),
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    canvasColor: globals.selectedWidgetColor,
-                                  ),
-                                  child: Container(
-                                    padding: const EdgeInsets.only(left: 15, right: 20),
-                                    alignment: AlignmentDirectional.center,
-                                    child: DropdownButton(
-                                      borderRadius: BorderRadius.circular(30.0),
-                                      items: [
-                                        const DropdownMenuItem(
-                                          value: "0",
-                                          child: Text("Pasirinkti",
-                                            style: TextStyle(color: Colors.red,letterSpacing: 0.25,fontWeight: FontWeight.bold),
-                                          ),
+                                child: Container(
+                                  padding: const EdgeInsets.only(left: 15, right: 20),
+                                  alignment: AlignmentDirectional.center,
+                                  child: DropdownButton(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    items: [
+                                      const DropdownMenuItem(
+                                        value: "0",
+                                        child: Text("Pasirinkti",
+                                          style: TextStyle(color: Colors.red,letterSpacing: 0.25,fontWeight: FontWeight.bold),
                                         ),
-                                        ...?activeCategories
-                                          ?.map((category) => DropdownMenuItem(
-                                            value: category.id,
-                                            child: Text(category['category'].toString().toUpperCase(),
-                                              style: const TextStyle(color: Colors.red,letterSpacing: 0.25,fontWeight: FontWeight.bold),
-                                            ),
-                                          ))
-                                          .toList(),
-                                      ],
-                                      onChanged: (categoryValue) async {
-                                        globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
-                                        setState(() {
-                                          selectedExpenseCategory = categoryValue as String;
-                                          _selectedCategoryType = 'Expense_Categories';
-                                        });
-                                      },
-                                      value: selectedExpenseCategory,
-                                      isExpanded: true,
-                                    ),
+                                      ),
+                                      ...?activeCategories
+                                        ?.map((category) => DropdownMenuItem(
+                                          value: category.id,
+                                          child: Text(category['category'].toString().toUpperCase(),
+                                            style: const TextStyle(color: Colors.red,letterSpacing: 0.25,fontWeight: FontWeight.bold),
+                                          ),
+                                        ))
+                                        .toList(),
+                                    ],
+                                    onChanged: (categoryValue) async {
+                                      globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                                      setState(() {
+                                        selectedExpenseCategory = categoryValue as String;
+                                        _selectedCategoryType = 'Expense_Categories';
+                                      });
+                                    },
+                                    value: selectedExpenseCategory,
+                                    isExpanded: true,
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                        ),
-            
-            
-                        IconButton(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          onPressed: (){
-                            globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
-                            var collection = FirebaseFirestore.instance.collection(uid).doc('Categories').collection(_selectedCategoryType);
-                            String selectedCategory = '';
-                            if (selectedExpenseCategory != "0"){
-                              collection.doc(selectedExpenseCategory).update({
-                                'status': 'deleted'
-                              }).then((value){
-                                setState(() {                    
-                                  selectedExpenseCategory = "0";
-                                });
-                              });
-                            }
-                            else{
-                              collection.doc(selectedIncomeCategory).update({
-                                'status': 'deleted'
-                              }).then((value){
-                                setState(() {                    
-                                  selectedIncomeCategory = "0";
-                                });
-                              });
-                            }
+                              ),
+                            );
                           },
-                          icon: Icon(Icons.delete, color: globals.selectedWidgetColor),
                         ),
+                      ),
             
             
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.41,
-                          padding: const EdgeInsets.only(right: 10),
-                          child: FutureBuilder<QuerySnapshot>(
-                            future: FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Income_Categories').get(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              }
-                              final categories = snapshot.data?.docs.reversed.toList();
-                              final activeCategories = categories?.where((category) => category['status'] == 'Active').toList();
-                              return Container(
-                                decoration: BoxDecoration(
-                                  color: globals.selectedWidgetColor,
-                                  borderRadius: BorderRadius.circular(70),
-                                          border: Border.all(
-                                            width: 3,
-                                            color: Colors.brown, style: BorderStyle.solid,
-                                          )
+                      IconButton(
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        onPressed: (){
+                          globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                          var collection = FirebaseFirestore.instance.collection(uid).doc('Categories').collection(_selectedCategoryType);
+                          if (selectedExpenseCategory != "0"){
+                            collection.doc(selectedExpenseCategory).update({
+                              'status': 'deleted'
+                            }).then((value){
+                              setState(() {                    
+                                selectedExpenseCategory = "0";
+                              });
+                            });
+                          }
+                          else{
+                            collection.doc(selectedIncomeCategory).update({
+                              'status': 'deleted'
+                            }).then((value){
+                              setState(() {                    
+                                selectedIncomeCategory = "0";
+                              });
+                            });
+                          }
+                        },
+                        icon: Icon(Icons.delete, color: globals.selectedWidgetColor),
+                      ),
+            
+            
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.41,
+                        padding: const EdgeInsets.only(right: 10),
+                        child: FutureBuilder<QuerySnapshot>(
+                          future: FirebaseFirestore.instance.collection(uid).doc('Categories').collection('Income_Categories').get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
+                            final categories = snapshot.data?.docs.reversed.toList();
+                            final activeCategories = categories?.where((category) => category['status'] == 'Active').toList();
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: globals.selectedWidgetColor,
+                                borderRadius: BorderRadius.circular(70),
+                                        border: Border.all(
+                                          width: 3,
+                                          color: Colors.brown, style: BorderStyle.solid,
+                                        )
+                              ),
+                              child: Theme(
+                                data: Theme.of(context).copyWith(
+                                  canvasColor: globals.selectedWidgetColor,
                                 ),
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    canvasColor: globals.selectedWidgetColor,
-                                  ),
-                                  child: Container(
-                                    padding: const EdgeInsets.only(left: 15, right: 20),
-                                    alignment: AlignmentDirectional.center,
-                                    child: DropdownButton(
-                                      borderRadius: BorderRadius.circular(30.0),
-                                      items: [
-                                        const DropdownMenuItem(
-                                          value: "0",
-                                          child: Text("Pasirinkti",
-                                            style: TextStyle(color: Colors.green,letterSpacing: 0.25,fontWeight: FontWeight.bold),
-                                          ),
+                                child: Container(
+                                  padding: const EdgeInsets.only(left: 15, right: 20),
+                                  alignment: AlignmentDirectional.center,
+                                  child: DropdownButton(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    items: [
+                                      const DropdownMenuItem(
+                                        value: "0",
+                                        child: Text("Pasirinkti",
+                                          style: TextStyle(color: Colors.green,letterSpacing: 0.25,fontWeight: FontWeight.bold),
                                         ),
-                                        ...?activeCategories
-                                          ?.map((category) => DropdownMenuItem(
-                                            value: category.id,
-                                            child: Text(category['category'].toString().toUpperCase(),
-                                              style: const TextStyle(color: Colors.green,letterSpacing: 0.25,fontWeight: FontWeight.bold),
-                                            ),
-                                          ))
-                                          .toList(),
-                                      ],
-                                      onChanged: (categoryValue) async {
-                                        globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
-                                        setState(() {
-                                          selectedIncomeCategory = categoryValue as String;
-                                          _selectedCategoryType = 'Income_Categories';
-                                        });
-                                      },
-                                      value: selectedIncomeCategory,
-                                      isExpanded: true,
-                                    ),
+                                      ),
+                                      ...?activeCategories
+                                        ?.map((category) => DropdownMenuItem(
+                                          value: category.id,
+                                          child: Text(category['category'].toString().toUpperCase(),
+                                            style: const TextStyle(color: Colors.green,letterSpacing: 0.25,fontWeight: FontWeight.bold),
+                                          ),
+                                        ))
+                                        .toList(),
+                                    ],
+                                    onChanged: (categoryValue) async {
+                                      globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                                      setState(() {
+                                        selectedIncomeCategory = categoryValue as String;
+                                        _selectedCategoryType = 'Income_Categories';
+                                      });
+                                    },
+                                    value: selectedIncomeCategory,
+                                    isExpanded: true,
                                   ),
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            );
+                          },
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                   ),   
                 
                 // Šis SizedBox skiria anksčiau esantį setting'ą nuo sekančio setting'o, kad nesusilietų widget'ai

@@ -1,13 +1,9 @@
-import 'dart:math';
 import 'package:jiffy/jiffy.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:budget_tracker/Bar graph/bar_graph.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:date_format/date_format.dart';
-import 'dart:async';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({Key? key}) : super(key: key);
@@ -46,7 +42,7 @@ class _StatisticsScreen extends State<StatisticsScreen> {
                       var currDate = DateTime.now();
                       var d = Jiffy(currDate).subtract(months: i).dateTime;
                       final today = formatDate(d, [yyyy, mm]);
-                      String docName = today + 'Expense';
+                      String docName = '${today}Expense';
                       for (var doc in userSnapshot) {
                         if(doc.id == docName){
                           double bal = double.parse(doc.get('Balance').toString());
