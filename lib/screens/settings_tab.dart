@@ -18,6 +18,7 @@ String _selectedCategoryType = '';
 String selectedExpenseCategory = "0";
 String selectedIncomeCategory = "0";
 
+final GlobalKey<FormState> _formKey = GlobalKey();
 final _monthlyIncomeController = TextEditingController();
 int _monthlyIncome = 0;
 //current users UID
@@ -357,42 +358,41 @@ Widget build(BuildContext context) {
                           return AlertDialog(
                             title: const Text('Įveskite pajamas'),
                             content: SingleChildScrollView(
-                              child: TextFormField(
-                                controller: _monthlyIncomeController,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  labelText: 'Skaičius'
+                              child: Form(
+                                key: _formKey,
+                                child: TextFormField(
+                                  controller: _monthlyIncomeController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Skaičius'
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Įveskite skaičių';
+                                    }
+                                    final number = int.tryParse(value);
+                                    if (number == null) {
+                                      return 'Įveskite tinkamą skaičių';
+                                    }
+                                    return null;
+                                  },
                                 ),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _monthlyIncome = int.tryParse(value) ?? 0;
-                                  });
-                                },
-                                onEditingComplete: () {
-                                  _monthlyIncomeController.text = '$_monthlyIncome';
-                                },
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Įveskite skaičių';
-                                  }
-                                  final number = int.tryParse(value);
-                                  if (number == null) {
-                                    return 'Įveskite tinkamą skaičių';
-                                  }
-                                  return null;
-                                },
                               ),
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () {
-                                  if (_monthlyIncomeController.text.isNotEmpty &&
-                                      int.tryParse(_monthlyIncomeController.text) != null) {
-                                    _monthlyIncome = int.parse(_monthlyIncomeController.text);
+                                  if (_formKey.currentState?.validate() ?? false) {
+                                    globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                                    setState(() {
+                                      _monthlyIncome = int.parse(_monthlyIncomeController.text);
+                                    });
                                     FirebaseFirestore.instance
                                       .collection(uid)
                                       .doc('monthly_income')
                                       .set({'income': _monthlyIncome});
+
+                                    _monthlyIncomeController.text = '$_monthlyIncome';
                                     Navigator.pop(context);
                                   }
                                 },
@@ -400,6 +400,8 @@ Widget build(BuildContext context) {
                               ),
                               TextButton(
                                 onPressed: () {
+                                  globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                                  _monthlyIncomeController.text = '$_monthlyIncome';
                                   Navigator.pop(context);
                                 },
                                 child: const Text('Atmesti'),
@@ -471,6 +473,7 @@ void fetchMonthlyIncome() {
       .then((snapshot) {
         if (snapshot.exists) {
           _monthlyIncome = snapshot.data()?['income'] ?? 0;
+          _monthlyIncomeController.text = '$_monthlyIncome';
           setState(() {}); // Update the UI to reflect the new value
         }
       });
