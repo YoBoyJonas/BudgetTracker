@@ -71,26 +71,31 @@ class _HomeTabState extends State<HomeTab> {
             ),
             backgroundColor: Colors.transparent,
             body: 
-            FutureBuilder(
+            FutureBuilder<List<Map<String, double>>>(
                 future: Future.wait([
                   getMonthData(formatDate(todaysDate.subtract(const Duration(days: 30)), [yyyy, mm])),
                   getMonthData(formatDate(todaysDate, [yyyy, mm])),
+                  getMonthlyIncome(),
                 ]),
-                builder: (context, AsyncSnapshot<List<Map<String, double>>> snapshot) {
+                builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
                   }
                   
-                  double previousMonthBalance = snapshot.data![0]['balance']!;
-                  double currentMonthBalance = snapshot.data![1]['balance']!;
-                  double currentMonthExpense = snapshot.data![1]['expense']!;
+                  if (snapshot.hasData) {
+                    double previousMonthBalance = snapshot.data![0]['balance']!;
+                    double currentMonthBalance = snapshot.data![1]['balance']!;
+                    double currentMonthExpense = snapshot.data![1]['expense']!;
+                    double monthlyIncome = snapshot.data![2]['income']!;
 
-                  if (globals.carryOverSurplusMoney && previousMonthBalance > 0){
-                    totalBalance = previousMonthBalance + currentMonthBalance;
-                  } else {
-                    totalBalance = currentMonthBalance;
+                    if (globals.carryOverSurplusMoney && previousMonthBalance > 0){
+                      totalBalance = previousMonthBalance + currentMonthBalance;
+                    } else {
+                      totalBalance = currentMonthBalance;
+                    }
+                    totalBalance += monthlyIncome;
+                    totalExpenses = currentMonthExpense;
                   }
-                  totalExpenses = currentMonthExpense;
 
 
                   return ListView(
@@ -400,6 +405,21 @@ class _HomeTabState extends State<HomeTab> {
 
     return {'balance': tempBalance, 'expense': tempExpense};
 }
+
+  Future<Map<String, double>> getMonthlyIncome() async {
+    final element = await FirebaseFirestore.instance
+        .collection(uid)
+        .doc('monthly_income')
+        .get();
+
+    double monthlyIncome = 0;
+    if (element.exists) {
+      monthlyIncome = (element.data()?['income'] ?? 0).toDouble();
+    }
+
+    return {'income': monthlyIncome};
+    // return element;
+  }
 
   Future<double> getMaxExpense() async{
     final element = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('202305MaxExpense').get();
