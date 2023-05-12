@@ -13,6 +13,13 @@ class SettingsTab extends StatefulWidget {
 
 class _SettingsTabState extends State<SettingsTab> {
 
+  List<String> _currencies = [
+    "\$",
+    "€",
+    "£",
+    "¥",
+  ];
+
 String _selectedCategoryType = '';
 
 String selectedExpenseCategory = "0";
@@ -453,6 +460,98 @@ Widget build(BuildContext context) {
                     ),
                   ),
                 ),
+                                // Šis SizedBox skiria anksčiau esantį setting'ą nuo sekančio setting'o, kad nesusilietų widget'ai
+                SizedBox(height: MediaQuery.of(context).size.width * 0.026),
+            
+                // Setting'as skirtas pakeisti valiutos zenkla
+                Container(
+                  padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                  decoration: BoxDecoration(
+                    color: globals.selectedWidgetColor,
+                    borderRadius: BorderRadius.circular(70),
+                      border: Border.all(
+                        width: MediaQuery.of(context).size.width * 0.007,
+                        color: Colors.brown, style: BorderStyle.solid,
+                      )
+                    ),
+                  child: Theme(
+                    data: Theme.of(context).copyWith(canvasColor: globals.selectedWidgetColor),                  
+                    child: ButtonTheme(
+                        child: FutureBuilder<String>(
+                          future: getCurrencySign(),
+                          builder: (context, snapshot) {
+                            if(snapshot.hasData){
+                            return DropdownButton(
+                              borderRadius: BorderRadius.circular(30.0),
+                                  items: _currencies.map((String identity) {
+                                    return DropdownMenuItem<String>(
+                                      value: identity,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 40, right: 40),
+                                        
+                                        child: RichText(
+                                          text: TextSpan(
+                                            text: 'Valiutos ženklas: ', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 20),
+                                            children: <TextSpan>[
+                                              TextSpan(
+                                                text: ' $identity '.toUpperCase(), style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 20, letterSpacing: 1.2),
+                                                
+                                              ),
+                                            ]
+                                            ),
+                                          ),
+                                    
+                                      ),    
+                                    );
+                                  }).toList(),
+                                  value: snapshot.data,
+                                  onChanged: (value) {
+                                    globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                                    setState(() {
+                                      updateCurrencySign(value.toString());
+                                    });
+                                  },
+                                );
+                            } else {
+                                                          return DropdownButton(
+                              borderRadius: BorderRadius.circular(30.0),
+                                  items: _currencies.map((String identity) {
+                                    return DropdownMenuItem<String>(
+                                      value: identity,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 40, right: 40),
+                                        
+                                        child: RichText(
+                                          text: TextSpan(
+                                            text: 'Valiutos ženklas: ', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 20),
+                                            children: <TextSpan>[
+                                              TextSpan(
+                                                text: ' $identity '.toUpperCase(), style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 20, letterSpacing: 1.2),
+                                                
+                                              ),
+                                            ]
+                                            ),
+                                          ),
+                                    
+                                      ),    
+                                    );
+                                  }).toList(),
+                                  value: snapshot.data,
+                                  onChanged: (value) {
+                                    globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                                    setState(() {
+                                      updateCurrencySign(value.toString());
+                                    });
+                                  },
+                                );
+                            }
+
+                            
+                          }
+                        ),
+                    ),
+                  ),
+                ),
                 ],
                       ),
             ),
@@ -521,4 +620,21 @@ void removeDBData() async{
     }
     //---------------------------------------
   }
+    Future<String> getCurrencySign() async{
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['currency_sign'].toString();
+      return bal;
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'currency_sign' : '\$'});
+      return '\$';
+    }
+  }
+  Future updateCurrencySign(String sign) async {
+  final curencySetting = FirebaseFirestore.instance.collection(uid).doc('Settings');
+  await curencySetting.update({'currency_sign' : sign});
+}
 }

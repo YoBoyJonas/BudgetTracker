@@ -119,27 +119,60 @@ class _HomeTabState extends State<HomeTab> {
                                   vertical: 10.0,
                                   horizontal: 8.0,
                                 ),
-                                child: Column(
-                                  children: [
-                                    const Text(
-                                      'BALANSAS',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 22.0,
-                                        color: Colors.green,
-                                        letterSpacing: 1.5,   
-                                        fontWeight: FontWeight.bold                   
-                                      ),
-                                    ),
-                                    Text(
-                                        '$totalBalance \$',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                        fontSize: 26.0,
-                                        color: Colors.green,
-                                      ),
-                                    ),           
-                                  ],
+                                child: FutureBuilder<String>(
+                                  future: getCurrencySign(),
+                                  builder: (context, snapshot) {
+                                  if(snapshot.hasData)
+                                  {  
+                                    String sign = snapshot.data!.toString();
+                                    return Column(
+                                      children: [
+                                        const Text(
+                                          'BALANSAS',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 22.0,
+                                            color: Colors.green,
+                                            letterSpacing: 1.5,   
+                                            fontWeight: FontWeight.bold                   
+                                          ),
+                                        ),
+                                        Text(
+                                            '$totalBalance $sign',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                            fontSize: 26.0,
+                                            color: Colors.green,
+                                          ),
+                                        ),           
+                                      ],
+                                    );
+                                  }
+                                  else{
+                                    return Column(
+                                      children: [
+                                        const Text(
+                                          'BALANSAS',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 22.0,
+                                            color: Colors.green,
+                                            letterSpacing: 1.5,   
+                                            fontWeight: FontWeight.bold                   
+                                          ),
+                                        ),
+                                        Text(
+                                            '$totalBalance \$',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                            fontSize: 26.0,
+                                            color: Colors.green,
+                                          ),
+                                        ),           
+                                      ],
+                                    );
+                                  }
+                                  }
                                 ),
                               ),
                             ),
@@ -162,27 +195,59 @@ class _HomeTabState extends State<HomeTab> {
                                     vertical: 10.0,
                                     horizontal: 8.0,
                                   ),
-                                  child: Column(
-                                    children: [
-                                      const Text(
-                                        'IŠLEISTA',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 22.0,
-                                          color: Colors.redAccent,
-                                          letterSpacing: 1.5,      
-                                          fontWeight: FontWeight.bold                
-                                        ),
-                                      ),
-                                      Text(
-                                          '$totalExpenses \$',
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                          fontSize: 26.0,
-                                          color: Colors.redAccent,
-                                        ),
-                                      ),           
-                                    ],
+child: FutureBuilder<String>(
+                                    future: getCurrencySign(),
+                                    builder: (context, snapshot) {
+                                      if(snapshot.hasData)
+                                      {
+                                      String sign = snapshot.data!.toString();
+                                      return Column(
+                                        children: [
+                                          const Text(
+                                            'IŠLEISTA',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 22.0,
+                                              color: Colors.redAccent,
+                                              letterSpacing: 1.5,      
+                                              fontWeight: FontWeight.bold                
+                                            ),
+                                          ),
+                                          Text(
+                                              '$totalExpenses $sign',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                              fontSize: 26.0,
+                                              color: Colors.redAccent,
+                                            ),
+                                          ),           
+                                        ],
+                                      );
+                                      } else {
+                                        return Column(
+                                        children: [
+                                          const Text(
+                                            'IŠLEISTA',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 22.0,
+                                              color: Colors.redAccent,
+                                              letterSpacing: 1.5,      
+                                              fontWeight: FontWeight.bold                
+                                            ),
+                                          ),
+                                          Text(
+                                              '$totalExpenses \$',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                              fontSize: 26.0,
+                                              color: Colors.redAccent,
+                                            ),
+                                          ),           
+                                        ],
+                                      );
+                                      }
+                                    }
                                   ),
                                 ),
                               ),
@@ -308,58 +373,119 @@ class _HomeTabState extends State<HomeTab> {
                         Expanded(
                           child: Container(
                           padding: EdgeInsets.only(top: MediaQuery.of(context).size.width * 0.012, left: MediaQuery.of(context).size.width * 0.02),
-                            child: FutureBuilder<double>(
-                              future: getMaxExpense(),
-                              builder: (context, snapshot){
-                                if (snapshot.hasData) {
-                                  return Row(
-                                      children: [
-                                        const Text(
-                                          'išleista ',
-                                          style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          decoration: TextDecoration.none,
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            '${snapshot.data!.toString()} \$',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                              fontSize: 16,
-                                              decoration: TextDecoration.none
+child: FutureBuilder<String>(
+                              future: getCurrencySign(),
+                              builder: (context, snapshot1) {
+                                if(snapshot1.hasData){
+                                String sign = snapshot1.data!.toString();
+                                return FutureBuilder<double>(
+                                  future: getMaxExpense(),
+                                  builder: (context, snapshot){
+                                    if (snapshot.hasData) {
+                                      return Row(
+                                          children: [
+                                            const Text(
+                                              'išleista ',
+                                              style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              decoration: TextDecoration.none,
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                } else if (snapshot.hasError) {
-                                    return Row(
-                                      children: const [
-                                        Text(
-                                          'išleista ',
-                                          style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          decoration: TextDecoration.none,
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            'neturite išlaidų!',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                              fontSize: 16,
-                                              decoration: TextDecoration.none
+                                            Expanded(
+                                              child: Text(
+                                                '${snapshot.data!.toString()} $sign',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                  fontSize: 16,
+                                                  decoration: TextDecoration.none
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  }
-                                return const SizedBox();
-                              },
+                                          ],
+                                        );
+                                    } else if (snapshot.hasError) {
+                                        return Row(
+                                          children: const [
+                                            Text(
+                                              'išleista ',
+                                              style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              decoration: TextDecoration.none,
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                'neturite išlaidų!',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                  fontSize: 16,
+                                                  decoration: TextDecoration.none
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                    return const SizedBox();
+                                  },
+                                );} else {
+                                  return FutureBuilder<double>(
+                                  future: getMaxExpense(),
+                                  builder: (context, snapshot){
+                                    if (snapshot.hasData) {
+                                      return Row(
+                                          children: [
+                                            const Text(
+                                              'išleista ',
+                                              style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              decoration: TextDecoration.none,
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                '${snapshot.data!.toString()} \$',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                  fontSize: 16,
+                                                  decoration: TextDecoration.none
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                    } else if (snapshot.hasError) {
+                                        return Row(
+                                          children: const [
+                                            Text(
+                                              'išleista ',
+                                              style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              decoration: TextDecoration.none,
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                'neturite išlaidų!',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                  fontSize: 16,
+                                                  decoration: TextDecoration.none
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                    return const SizedBox();
+                                  },
+                                );
+                                }
+                              }
                             ),
                           ),
                         ),
@@ -431,5 +557,18 @@ class _HomeTabState extends State<HomeTab> {
     final element = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('202305MaxExpense').get();
     String maxName = element.data()!['Name'];
     return maxName;
+  }
+    Future<String> getCurrencySign() async{
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['currency_sign'].toString();
+      return bal;
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'currency_sign' : '\$'});
+      return '\$';
+    };
   }
 }

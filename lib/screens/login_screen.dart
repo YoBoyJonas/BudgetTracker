@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:budget_tracker/auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -33,6 +34,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await Auth().createUserWithEmailAndPassword(
           email: _controllerEmail.text, password: _controllerPassword.text);
+          final uid = FirebaseAuth.instance.currentUser!.uid;
+          final curencySetting = FirebaseFirestore.instance.collection(uid).doc('Settings').set({'currency_sign' : '\$'});
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;

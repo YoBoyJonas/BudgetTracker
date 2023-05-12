@@ -10,6 +10,7 @@ class ExpenseTile extends StatelessWidget {
   final String amount;
   final DateTime dateTime;
   final String type;
+  final String currencySign;
 
 
   const ExpenseTile({
@@ -18,6 +19,7 @@ class ExpenseTile extends StatelessWidget {
     required this.amount,
     required this.dateTime,  
     required this.type,
+    required this.currencySign,
     });
 
     
@@ -47,7 +49,7 @@ class ExpenseTile extends StatelessWidget {
               subtitle: Text(
                 '${dateTime.day.toString().padLeft(2,"0")}/${dateTime.month.toString().padLeft(2,"0")}/${dateTime.year} ${dateTime.hour.toString().padLeft(2, "0")}:${dateTime.minute.toString().padLeft(2,"0")}',
               ),
-              trailing: Text('\$ $amount',style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 22)),
+              trailing: Text('$currencySign $amount',style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 22)),
             ),
           ),
           IconButton(

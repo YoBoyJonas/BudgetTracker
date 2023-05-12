@@ -480,20 +480,47 @@ class _AddTabState extends State<AddTab> {
                   }
                   final userSnapshot = snapshot.data?.docs;
 
-                  return Expanded ( child: Container(
-                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                    child: ListView.builder(
-                        scrollDirection: Axis.vertical, 
-                        itemCount: userSnapshot?.length,
-                        itemBuilder: (context, index) => Container(
-                          padding: const EdgeInsets.only(top: 5),
-                          child: ExpenseTile(
-                            name: userSnapshot![index]["name"],
-                            amount: userSnapshot[index]["amount"], 
-                            dateTime: userSnapshot[index]["dateTime"].toDate(),
-                            type: userSnapshot[index]["type"]),
-                        ), ),
-                  ),
+                  return FutureBuilder<Object>(
+                    future: getCurrencySign(),
+                    builder: (context, snapshot2) {
+                      if(snapshot2.hasData){
+                      return Expanded ( child: Container(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                        child: ListView.builder(
+                            scrollDirection: Axis.vertical, 
+                            itemCount: userSnapshot?.length,
+                            itemBuilder: (context, index) => Container(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: ExpenseTile(
+                                name: userSnapshot![index]["name"],
+                                amount: userSnapshot[index]["amount"], 
+                                dateTime: userSnapshot[index]["dateTime"].toDate(),
+                                type: userSnapshot[index]["type"],
+                                currencySign: snapshot2.data!.toString(),
+                                ),
+                            ), ),
+                      ),
+                      );
+                      } else {
+                        return Expanded ( child: Container(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                        child: ListView.builder(
+                            scrollDirection: Axis.vertical, 
+                            itemCount: userSnapshot?.length,
+                            itemBuilder: (context, index) => Container(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: ExpenseTile(
+                                name: userSnapshot![index]["name"],
+                                amount: userSnapshot[index]["amount"], 
+                                dateTime: userSnapshot[index]["dateTime"].toDate(),
+                                type: userSnapshot[index]["type"],
+                                currencySign: '\$',
+                                ),
+                            ), ),
+                      ),
+                      );
+                      }
+                    }
                   );
                 }
               ),
@@ -685,4 +712,18 @@ Future<void> calculateMaxExpense() async{
         }
         
     }     
+  }
+    Future<String> getCurrencySign() async{
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['currency_sign'].toString();
+      return bal;
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'currency_sign' : '\$'});
+      return '\$';
+    }
   }
