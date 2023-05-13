@@ -8,6 +8,7 @@ import 'package:budget_tracker/data/income_expense_data.dart';
 import 'package:provider/provider.dart';
 import 'package:date_format/date_format.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
+import 'package:isoweek/isoweek.dart';
 
 class AddTab extends StatefulWidget {
   const AddTab({Key? key}) : super(key: key);
@@ -470,106 +471,225 @@ class _AddTabState extends State<AddTab> {
             body: Consumer<ExpenseData>(  
         builder:(context, valueExpense, child) => Scaffold(   
           backgroundColor: Colors.transparent,      
-          body: Column(
-            children:[
-              StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('${formatDate(todaysDate, [yyyy, mm])}income_expense').snapshots(),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
-                  final userSnapshot = snapshot.data?.docs;
-
-                  return FutureBuilder<Object>(
-                    future: getCurrencySign(),
-                    builder: (context, snapshot2) {
-                      if(snapshot2.hasData){
-                      return Expanded ( child: Container(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                        child: ListView.builder(
-                            scrollDirection: Axis.vertical, 
-                            itemCount: userSnapshot?.length,
-                            itemBuilder: (context, index) => Container(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: ExpenseTile(
-                                name: userSnapshot![index]["name"],
-                                amount: userSnapshot[index]["amount"], 
-                                dateTime: userSnapshot[index]["dateTime"].toDate(),
-                                type: userSnapshot[index]["type"],
-                                currencySign: snapshot2.data!.toString(),
-                                ),
-                            ), ),
-                      ),
-                      );
-                      } else {
-                        return Expanded ( child: Container(
-                        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                        child: ListView.builder(
-                            scrollDirection: Axis.vertical, 
-                            itemCount: userSnapshot?.length,
-                            itemBuilder: (context, index) => Container(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: ExpenseTile(
-                                name: userSnapshot![index]["name"],
-                                amount: userSnapshot[index]["amount"], 
-                                dateTime: userSnapshot[index]["dateTime"].toDate(),
-                                type: userSnapshot[index]["type"],
-                                currencySign: '\$',
-                                ),
-                            ), ),
-                      ),
-                      );
+          body: FutureBuilder<bool>(
+            future: getInterval(),
+            builder: (context, snapshot) {
+              if(snapshot.hasData){
+                if(snapshot.data == true){
+                  return Column(
+                children:[
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('${formatDate(todaysDate, [yyyy, mm])}income_expense').snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
                       }
+                      final userSnapshot = snapshot.data?.docs;
+          
+                      return FutureBuilder<Object>(
+                        future: getCurrencySign(),
+                        builder: (context, snapshot2) {
+                          if(snapshot2.hasData){
+                          return Expanded ( child: Container(
+                            padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: ListView.builder(
+                                scrollDirection: Axis.vertical, 
+                                itemCount: userSnapshot?.length,
+                                itemBuilder: (context, index) => Container(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: ExpenseTile(
+                                    name: userSnapshot![index]["name"],
+                                    amount: userSnapshot[index]["amount"], 
+                                    dateTime: userSnapshot[index]["dateTime"].toDate(),
+                                    type: userSnapshot[index]["type"],
+                                    currencySign: snapshot2.data!.toString(),
+                                    ),
+                                ), ),
+                          ),
+                          );
+                          } else {
+                            return Expanded ( child: Container(
+                            padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: ListView.builder(
+                                scrollDirection: Axis.vertical, 
+                                itemCount: userSnapshot?.length,
+                                itemBuilder: (context, index) => Container(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: ExpenseTile(
+                                    name: userSnapshot![index]["name"],
+                                    amount: userSnapshot[index]["amount"], 
+                                    dateTime: userSnapshot[index]["dateTime"].toDate(),
+                                    type: userSnapshot[index]["type"],
+                                    currencySign: '\$',
+                                    ),
+                                ), ),
+                          ),
+                          );
+                          }
+                        }
+                      );
                     }
-                  );
+                  ),
+          
+                  Center(child: Row(children: <Widget>[
+                    //Opens expenses page  
+                    Container(  
+                      //alignment: Alignment.bottomRight,
+                      margin: const EdgeInsets.all(25),
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      height: MediaQuery.of(context).size.width * 0.15,
+                      child: OutlinedButton(
+                        onPressed: () { 
+                          globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                          addNewExpense('Pridėkite išlaidą');
+                        }, 
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(70.0)),
+                          side: BorderSide(color: Colors.brown, style: BorderStyle.solid, width: MediaQuery.of(context).size.width * 0.007),
+                          backgroundColor: globals.selectedWidgetColor          
+                        ),                   
+                        child: const Text('Išlaidos', style: TextStyle(fontSize: 20.0,color: Colors.red, fontWeight: FontWeight.bold)),
+                      ),  
+                    ),
+          
+                  const Spacer(),
+                  
+                  //Opens Income page 
+                    Container( 
+                      //alignment: Alignment.centerRight, 
+                      margin: const EdgeInsets.all(25),
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      height: MediaQuery.of(context).size.width * 0.15,             
+                      child: OutlinedButton(  
+                        onPressed: () {
+                          globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                          addNewIncome('Pridėkite pinigus');
+                        },
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(70.0)),
+                          side: BorderSide(color: Colors.brown, style: BorderStyle.solid, width: MediaQuery.of(context).size.width * 0.007),
+                          backgroundColor: globals.selectedWidgetColor                     
+                        ),  
+                        child: const Text('Pajamos', style: TextStyle(fontSize: 20.0, color: Colors.green, fontWeight: FontWeight.bold),),      
+                      ),  
+                    ),
+                 ], 
+                 )),
+                ]
+              );
+            }
+                
+                else{
+                  Week currentWeek = Week.current(); 
+                  Week weekFromIso = Week.fromISOString(currentWeek.toString());
+                  return Column(
+                children:[
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('${weekFromIso}income_expense').snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      final userSnapshot = snapshot.data?.docs;
+          
+                      return FutureBuilder<Object>(
+                        future: getCurrencySign(),
+                        builder: (context, snapshot2) {
+                          if(snapshot2.hasData){
+                          return Expanded ( child: Container(
+                            padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: ListView.builder(
+                                scrollDirection: Axis.vertical, 
+                                itemCount: userSnapshot?.length,
+                                itemBuilder: (context, index) => Container(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: ExpenseTile(
+                                    name: userSnapshot![index]["name"],
+                                    amount: userSnapshot[index]["amount"], 
+                                    dateTime: userSnapshot[index]["dateTime"].toDate(),
+                                    type: userSnapshot[index]["type"],
+                                    currencySign: snapshot2.data!.toString(),
+                                    ),
+                                ), ),
+                          ),
+                          );
+                          } else {
+                            return Expanded ( child: Container(
+                            padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: ListView.builder(
+                                scrollDirection: Axis.vertical, 
+                                itemCount: userSnapshot?.length,
+                                itemBuilder: (context, index) => Container(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: ExpenseTile(
+                                    name: userSnapshot![index]["name"],
+                                    amount: userSnapshot[index]["amount"], 
+                                    dateTime: userSnapshot[index]["dateTime"].toDate(),
+                                    type: userSnapshot[index]["type"],
+                                    currencySign: '\$',
+                                    ),
+                                ), ),
+                          ),
+                          );
+                          }
+                        }
+                      );
+                    }
+                  ),
+          
+                  Center(child: Row(children: <Widget>[
+                    //Opens expenses page  
+                    Container(  
+                      //alignment: Alignment.bottomRight,
+                      margin: const EdgeInsets.all(25),
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      height: MediaQuery.of(context).size.width * 0.15,
+                      child: OutlinedButton(
+                        onPressed: () { 
+                          globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                          addNewExpense('Pridėkite išlaidą');
+                        }, 
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(70.0)),
+                          side: BorderSide(color: Colors.brown, style: BorderStyle.solid, width: MediaQuery.of(context).size.width * 0.007),
+                          backgroundColor: globals.selectedWidgetColor          
+                        ),                   
+                        child: const Text('Išlaidos', style: TextStyle(fontSize: 20.0,color: Colors.red, fontWeight: FontWeight.bold)),
+                      ),  
+                    ),
+          
+                  const Spacer(),
+                  
+                  //Opens Income page 
+                    Container( 
+                      //alignment: Alignment.centerRight, 
+                      margin: const EdgeInsets.all(25),
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      height: MediaQuery.of(context).size.width * 0.15,             
+                      child: OutlinedButton(  
+                        onPressed: () {
+                          globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                          addNewIncome('Pridėkite pinigus');
+                        },
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(70.0)),
+                          side: BorderSide(color: Colors.brown, style: BorderStyle.solid, width: MediaQuery.of(context).size.width * 0.007),
+                          backgroundColor: globals.selectedWidgetColor                     
+                        ),  
+                        child: const Text('Pajamos', style: TextStyle(fontSize: 20.0, color: Colors.green, fontWeight: FontWeight.bold),),      
+                      ),  
+                    ),
+                 ], 
+                 )),
+                ]
+              );
+            
                 }
-              ),
-
-              Center(child: Row(children: <Widget>[
-                //Opens expenses page  
-                Container(  
-                  //alignment: Alignment.bottomRight,
-                  margin: const EdgeInsets.all(25),
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  height: MediaQuery.of(context).size.width * 0.15,
-                  child: OutlinedButton(
-                    onPressed: () { 
-                      globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
-                      addNewExpense('Pridėkite išlaidą');
-                    }, 
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(70.0)),
-                      side: BorderSide(color: Colors.brown, style: BorderStyle.solid, width: MediaQuery.of(context).size.width * 0.007),
-                      backgroundColor: globals.selectedWidgetColor          
-                    ),                   
-                    child: const Text('Išlaidos', style: TextStyle(fontSize: 20.0,color: Colors.red, fontWeight: FontWeight.bold)),
-                  ),  
-                ),
-
-              const Spacer(),
-              
-              //Opens Income page 
-                Container( 
-                  //alignment: Alignment.centerRight, 
-                  margin: const EdgeInsets.all(25),
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  height: MediaQuery.of(context).size.width * 0.15,             
-                  child: OutlinedButton(  
-                    onPressed: () {
-                      globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
-                      addNewIncome('Pridėkite pinigus');
-                    },
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(70.0)),
-                      side: BorderSide(color: Colors.brown, style: BorderStyle.solid, width: MediaQuery.of(context).size.width * 0.007),
-                      backgroundColor: globals.selectedWidgetColor                     
-                    ),  
-                    child: const Text('Pajamos', style: TextStyle(fontSize: 20.0, color: Colors.green, fontWeight: FontWeight.bold),),      
-                  ),  
-                ),
-             ], 
-             )),
-            ]
+              }
+              else{
+                return CircularProgressIndicator();
+              }
+}
           )
     ) 
      
@@ -585,11 +705,23 @@ class _AddTabState extends State<AddTab> {
     var todaysDate = DateTime.now();
     //formats it into months
     final today = formatDate(todaysDate, [yyyy, mm]);
+    //gets current week
+    Week currentWeek = Week.current(); 
+    Week weekFromIso = Week.fromISOString(currentWeek.toString());
+    //monthly
     final docLedger = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('$today''income_expense').doc();
     final balance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$today''Balance');
     final expenseBalance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''Expense');
     final expenseBalanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''Expense').get();
     final balanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$today''Balance').get();
+    //-----------
+    //weekly 
+    final weeklyDocLedger = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('$weekFromIso''income_expense').doc();
+    final weeklyBalance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$today''Balance');
+    final weeklyExpenseBalance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$weekFromIso''Expense');
+    final weeklyExpenseBalanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$weekFromIso''Expense').get();
+    final weeklyBalanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$weekFromIso''Balance').get();
+    //-----------
 
     final json = {
       'name': item.name,
@@ -600,6 +732,7 @@ class _AddTabState extends State<AddTab> {
 
 
     if(item.type == 'Expense'){
+      //adds to monthly catalogs
       if(expenseBalanceSnapshot.exists)
       {
         Map<String, dynamic> data = expenseBalanceSnapshot.data()!;
@@ -624,9 +757,35 @@ class _AddTabState extends State<AddTab> {
         double bal =  0 - double.parse(item.amount);
         balance.set({'Balance' : bal });
       }
+      //adds to weekly catalogs
+      if(weeklyExpenseBalanceSnapshot.exists)
+      {
+        Map<String, dynamic> data = weeklyExpenseBalanceSnapshot.data()!;
+        double bal = double.parse(data['Balance'].toString());
+        bal += double.parse(item.amount);
+        weeklyExpenseBalance.update({'Balance' : bal });
+      }
+      else
+      {
+        double bal = double.parse(item.amount);
+        weeklyExpenseBalance.set({'Balance' : bal });
+      }
+      if(weeklyBalanceSnapshot.exists)
+      {
+        Map<String, dynamic> data = weeklyBalanceSnapshot.data()!;
+        double bal = double.parse(data['Balance'].toString());
+        bal -= double.parse(item.amount);
+        weeklyBalance.update({'Balance' : bal });
+      }
+      else
+      {
+        double bal =  0 - double.parse(item.amount);
+        weeklyBalance.set({'Balance' : bal });
+      }
     }
     else
     {
+      //adds to monthly catalogs
       if(balanceSnapshot.exists)
       {
         Map<String, dynamic> data = balanceSnapshot.data()!;
@@ -639,9 +798,22 @@ class _AddTabState extends State<AddTab> {
         double bal = double.parse(item.amount);
         balance.set({'Balance' : bal });
       }
-
+      //adds to weekly catalogs
+      if(weeklyBalanceSnapshot.exists)
+      {
+        Map<String, dynamic> data = weeklyBalanceSnapshot.data()!;
+        double bal = double.parse(data['Balance'].toString());
+        bal += double.parse(item.amount);
+        weeklyBalance.update({'Balance' : bal });
+      }
+      else
+      {
+        double bal = double.parse(item.amount);
+        weeklyBalance.set({'Balance' : bal });
+      }
     }
     await docLedger.set(json);
+    await weeklyDocLedger.set(json);
   }
 
     Future createIncomeCategories({required String item}) async {
@@ -665,10 +837,37 @@ class _AddTabState extends State<AddTab> {
 
     await docLedger.set(json);
   }
+    Future<bool> getInterval() async{
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['monthly'].toString();;
+      if(bal == 'true' || bal == 'false'){
+        //print("pirmas ifas");
+        return bal == 'true';
+      }
+      else{
+        //print("pirmas elsas");
+        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'monthly' : true});
+        return true; 
+      }
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'monthly' : true});
+      return true;
+    }
+  }
 }
 
 Future<void> calculateMaxExpense() async{
   final uid = FirebaseAuth.instance.currentUser!.uid;
+   //weekly stuff
+   Week currentWeek = Week.current(); 
+  Week weekFromIso = Week.fromISOString(currentWeek.toString());
+   final weeklySnapshot = await FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('${weekFromIso}income_expense').get();
+   final weeklyDocList = weeklySnapshot.docs;
+   //------------
     final snapshot = await FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('202305income_expense').get();
     final docList = snapshot.docs;
     final nameToTotalAmount = <String, double>{};
@@ -712,8 +911,47 @@ Future<void> calculateMaxExpense() async{
         }
         
     }     
+    //weekly stuff
+    if (weeklyDocList.isEmpty){
+      await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('${weekFromIso}MaxExpense')
+            .set({'Name' : 0, 'Amount' : 0});
+      return;
+    }
+    for (final doc in weeklyDocList)
+    {
+      final type = doc.data()['type'] as String;
+      if (type == 'Expense')
+      {
+        final name = doc.data()['name'] as String;
+        final amount = double.parse(doc.data()['amount']);
+
+        if (nameToTotalAmount.containsKey(name) && type == 'Expense') {
+          nameToTotalAmount[name] = (nameToTotalAmount[name]! + amount);
+        } else if (!nameToTotalAmount.containsKey(name) && type == 'Expense'){
+          nameToTotalAmount[name] = amount;
+        }
+
+        final maxExpenseName = nameToTotalAmount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+        final maxExpenseAmount = nameToTotalAmount.values.reduce((a, b) => a > b ? a : b);
+
+        final maxExpenseBalanceDoc = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('${weekFromIso}MaxExpense').get();
+
+        if (!maxExpenseBalanceDoc.exists) {
+          await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('${weekFromIso}MaxExpense')
+            .set({'Name' : maxExpenseName, 'Amount' : maxExpenseAmount});
+        } else {
+          final existingAmount = maxExpenseBalanceDoc.data()!['Amount'];
+          if (maxExpenseAmount > existingAmount){
+            await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('${weekFromIso}MaxExpense')
+              .update({'Name' : maxExpenseName, 'Amount' : maxExpenseAmount});
+          }
+        }
+        }
+        
+    }   
+    //------------------
   }
-    Future<String> getCurrencySign() async{
+  Future<String> getCurrencySign() async{
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
     if (settingsSnapshot.exists) {

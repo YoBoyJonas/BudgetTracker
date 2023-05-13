@@ -13,11 +13,16 @@ class SettingsTab extends StatefulWidget {
 
 class _SettingsTabState extends State<SettingsTab> {
 
-  List<String> _currencies = [
+  final List<String> _currencies = [
     "\$",
     "€",
     "£",
     "¥",
+  ];
+
+  final List<String> _intervals = [
+    "Mėnesinis",
+    "Savaitinis",
   ];
 
 String _selectedCategoryType = '';
@@ -433,7 +438,7 @@ Widget build(BuildContext context) {
                     child: Row(
                       children: [
                         const Text(
-                          'Mėnesinės pajamos: ',
+                          'Pajamos: ',
                           style: TextStyle(
                             letterSpacing: 1.5,
                             fontWeight: FontWeight.bold,
@@ -460,10 +465,10 @@ Widget build(BuildContext context) {
                     ),
                   ),
                 ),
-                                // Šis SizedBox skiria anksčiau esantį setting'ą nuo sekančio setting'o, kad nesusilietų widget'ai
+                // Šis SizedBox skiria anksčiau esantį setting'ą nuo sekančio setting'o, kad nesusilietų widget'ai
                 SizedBox(height: MediaQuery.of(context).size.width * 0.026),
             
-                // Setting'as skirtas pakeisti valiutos zenkla
+                //Setting'as skirtas pakeisti valiutos zenkla
                 Container(
                   padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                   decoration: BoxDecoration(
@@ -481,6 +486,7 @@ Widget build(BuildContext context) {
                           future: getCurrencySign(),
                           builder: (context, snapshot) {
                             if(snapshot.hasData){
+                            String sign = snapshot.data.toString();
                             return DropdownButton(
                               borderRadius: BorderRadius.circular(30.0),
                                   items: _currencies.map((String identity) {
@@ -504,7 +510,7 @@ Widget build(BuildContext context) {
                                       ),    
                                     );
                                   }).toList(),
-                                  value: snapshot.data,
+                                  value: sign,
                                   onChanged: (value) {
                                     globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                                     setState(() {
@@ -513,42 +519,89 @@ Widget build(BuildContext context) {
                                   },
                                 );
                             } else {
-                                                          return DropdownButton(
-                              borderRadius: BorderRadius.circular(30.0),
-                                  items: _currencies.map((String identity) {
-                                    return DropdownMenuItem<String>(
-                                      value: identity,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(left: 40, right: 40),
-                                        
-                                        child: RichText(
-                                          text: TextSpan(
-                                            text: 'Valiutos ženklas: ', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 20),
-                                            children: <TextSpan>[
-                                              TextSpan(
-                                                text: ' $identity '.toUpperCase(), style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 20, letterSpacing: 1.2),
-                                                
-                                              ),
-                                            ]
-                                            ),
-                                          ),
-                                    
-                                      ),    
-                                    );
-                                  }).toList(),
-                                  value: snapshot.data,
-                                  onChanged: (value) {
-                                    globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
-                                    setState(() {
-                                      updateCurrencySign(value.toString());
-                                    });
-                                  },
-                                );
+                                return CircularProgressIndicator(); 
                             }
 
                             
                           }
                         ),
+                    ),
+                  ),
+                ),
+                // Šis SizedBox skiria anksčiau esantį setting'ą nuo sekančio setting'o, kad nesusilietų widget'ai
+                SizedBox(height: MediaQuery.of(context).size.width * 0.026),
+            
+                // Setting'as skirtas pasirinkti intervala tarp balanso resetinimo
+                Container(
+                  padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                  decoration: BoxDecoration(
+                    color: globals.selectedWidgetColor,
+                    borderRadius: BorderRadius.circular(70),
+                      border: Border.all(
+                        width: MediaQuery.of(context).size.width * 0.007,
+                        color: Colors.brown, style: BorderStyle.solid,
+                      )
+                    ),
+                  child: Theme(
+                    data: Theme.of(context).copyWith(canvasColor: globals.selectedWidgetColor),                  
+                    child: ButtonTheme(
+                        child: FutureBuilder<bool>(
+  future: getInterval(),
+  builder: (context, snapshot) {
+    if (snapshot.hasData) {
+      String? interval;
+      print(snapshot.data);
+      if (snapshot.data == true) {
+        interval = _intervals[0];
+      } else {
+        interval = _intervals[1];
+      }
+      return DropdownButton(
+        borderRadius: BorderRadius.circular(30.0),
+        items: _intervals.map((String identity) {
+          return DropdownMenuItem<String>(
+            value: identity,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 40, right: 40),
+              child: RichText(
+                text: TextSpan(
+                  text: 'Intervalas: ',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black54,
+                    fontSize: 20,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: ' $identity '.toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        //letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+        value: interval,
+        onChanged: (value1) {
+          //print(value1);
+          globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+          setState(() {
+            updateInterval(value1.toString());
+          });
+        },
+      );
+    } else {
+      return CircularProgressIndicator(); // or any other loading indicator
+    }
+  },
+),
+
                     ),
                   ),
                 ),
@@ -636,5 +689,37 @@ void removeDBData() async{
   Future updateCurrencySign(String sign) async {
   final curencySetting = FirebaseFirestore.instance.collection(uid).doc('Settings');
   await curencySetting.update({'currency_sign' : sign});
-}
+  }
+  Future<bool> getInterval() async{
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['monthly'].toString();;
+      if(bal == 'true' || bal == 'false'){
+        //print("pirmas ifas");
+        return bal == 'true';
+      }
+      else{
+        //print("pirmas elsas");
+        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'monthly' : true});
+        return true; 
+      }
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'monthly' : true});
+      return true;
+    }
+  }
+  Future updateInterval(String interval) async {
+  final curencySetting = FirebaseFirestore.instance.collection(uid).doc('Settings');
+  if(interval == 'Mėnesinis'){
+    //print("antras ifas");
+    await curencySetting.update({'monthly' : true});
+  }else{
+    //print("antras elsas");
+    await curencySetting.update({'monthly' : false});
+  }
+
+  }
 }
