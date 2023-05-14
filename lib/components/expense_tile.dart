@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:budget_tracker/screens/add_tab.dart';
 import 'package:intl/intl.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
+import 'package:isoweek/isoweek.dart';
 
 class ExpenseTile extends StatelessWidget {
   final String name;
@@ -131,6 +132,8 @@ class ExpenseTile extends StatelessWidget {
   }
 
   Future<void> removeData(String amount, DateTime dateTime, String name, String type) async{
+    Week currentWeek = Week.current(); 
+    Week weekFromIso = Week.fromISOString(currentWeek.toString());
     String formattedDate = DateFormat('yyyyMM').format(dateTime);
     String suffix = 'income_expense';
     final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -148,6 +151,19 @@ class ExpenseTile extends StatelessWidget {
     if(element.docs.isNotEmpty)
     {
       var docRef = element.docs.first.reference;
+      await docRef.delete();
+    }
+    var weeklyElement = await FirebaseFirestore.instance.collection(uid)
+      .doc('income_expense')
+      .collection('$weekFromIso$suffix')
+      .where('amount', isEqualTo: amount)
+      .where('dateTime', isEqualTo: dateTime)
+      .where('name', isEqualTo: name)
+      .where('type', isEqualTo: type)
+      .get();
+      if(weeklyElement.docs.isNotEmpty)
+    {
+      var docRef = weeklyElement.docs.first.reference;
       await docRef.delete();
     }
   }

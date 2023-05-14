@@ -590,6 +590,7 @@ class _AddTabState extends State<AddTab> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator();
                       }
+                      
                       final userSnapshot = snapshot.data?.docs;
           
                       return FutureBuilder<Object>(
@@ -717,7 +718,7 @@ class _AddTabState extends State<AddTab> {
     //-----------
     //weekly 
     final weeklyDocLedger = FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('$weekFromIso''income_expense').doc();
-    final weeklyBalance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$today''Balance');
+    final weeklyBalance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$weekFromIso''Balance');
     final weeklyExpenseBalance = FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$weekFromIso''Expense');
     final weeklyExpenseBalanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$weekFromIso''Expense').get();
     final weeklyBalanceSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Balances').doc('$weekFromIso''Balance').get();
@@ -867,6 +868,7 @@ Future<void> calculateMaxExpense() async{
   Week weekFromIso = Week.fromISOString(currentWeek.toString());
    final weeklySnapshot = await FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('${weekFromIso}income_expense').get();
    final weeklyDocList = weeklySnapshot.docs;
+   final weeklyNameToTotalAmount = <String, double>{};
    //------------
     final snapshot = await FirebaseFirestore.instance.collection(uid).doc('income_expense').collection('202305income_expense').get();
     final docList = snapshot.docs;
@@ -925,14 +927,14 @@ Future<void> calculateMaxExpense() async{
         final name = doc.data()['name'] as String;
         final amount = double.parse(doc.data()['amount']);
 
-        if (nameToTotalAmount.containsKey(name) && type == 'Expense') {
-          nameToTotalAmount[name] = (nameToTotalAmount[name]! + amount);
-        } else if (!nameToTotalAmount.containsKey(name) && type == 'Expense'){
-          nameToTotalAmount[name] = amount;
+        if (weeklyNameToTotalAmount.containsKey(name) && type == 'Expense') {
+          weeklyNameToTotalAmount[name] = (weeklyNameToTotalAmount[name]! + amount);
+        } else if (!weeklyNameToTotalAmount.containsKey(name) && type == 'Expense'){
+          weeklyNameToTotalAmount[name] = amount;
         }
 
-        final maxExpenseName = nameToTotalAmount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
-        final maxExpenseAmount = nameToTotalAmount.values.reduce((a, b) => a > b ? a : b);
+        final maxExpenseName = weeklyNameToTotalAmount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+        final maxExpenseAmount = weeklyNameToTotalAmount.values.reduce((a, b) => a > b ? a : b);
 
         final maxExpenseBalanceDoc = await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('${weekFromIso}MaxExpense').get();
 
