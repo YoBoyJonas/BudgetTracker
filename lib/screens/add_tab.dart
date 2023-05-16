@@ -958,8 +958,17 @@ Future<void> calculateMaxExpense() async{
     final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
     if (settingsSnapshot.exists) {
       Map<String, dynamic> data = settingsSnapshot.data()!;
-      String bal = data['currency_sign'].toString();
-      return bal;
+      if (data.containsKey('currency_sign')) {
+        String bal = data['currency_sign'].toString();
+        return bal;
+      } else {
+        // The 'currency_sign' field does not exist, so set the value
+        await FirebaseFirestore.instance
+          .collection(uid)
+          .doc('Settings')
+          .update({'currency_sign' : '\$'});
+        return '\$';
+      }
     }
     else
     {
