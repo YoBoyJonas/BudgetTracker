@@ -27,7 +27,8 @@ List<ImageProvider> bg = [
 //changes all widget color to the selected one
 List<Color> selectedWidgetColorList = <Color>[
   const Color.fromARGB(248, 226, 214, 192),
-  Colors.amberAccent
+  const Color.fromARGB(248, 255, 213, 213),
+  const Color.fromARGB(248, 183, 255, 249),
 ];
 
 Color selectedWidgetColor = selectedWidgetColorList[0]; // default = [0]

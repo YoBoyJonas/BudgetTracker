@@ -304,6 +304,58 @@ Widget build(BuildContext context) {
                   ),
                 ),
             
+                SizedBox(height: MediaQuery.of(context).size.width * 0.026),
+
+                // setting'as susijęs su widget color selectionu
+                Container(
+                  padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                  decoration: BoxDecoration(
+                    color: globals.selectedWidgetColor,
+                    borderRadius: BorderRadius.circular(70),
+                      border: Border.all(
+                        width: MediaQuery.of(context).size.width * 0.007,
+                        color: Colors.brown, style: BorderStyle.solid,
+                      )
+                    ),
+                  child: Theme(
+                    data: Theme.of(context).copyWith(canvasColor: globals.selectedWidgetColor),                  
+                    child: ButtonTheme(
+                        child: DropdownButton(
+                          borderRadius: BorderRadius.circular(30.0),
+                              items: globals.selectedWidgetColorList.map((Color colorDisplay) {
+                                return DropdownMenuItem<Color>(
+                                  value: colorDisplay,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 40, right: 40),
+                                    
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(70),
+                                        border: Border.all(
+                                          width: MediaQuery.of(context).size.width * 0.007,
+                                          color: Colors.brown, style: BorderStyle.solid,
+                                        )
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 15, right: 15),
+                                        child: Text('Elementų spalva', style: TextStyle(fontWeight: FontWeight.bold, color: colorDisplay, fontSize: 20,)),
+                                      )),
+                                  ),    
+                                );
+                              }).toList(),
+                              value: globals.selectedWidgetColor,
+                              onChanged: (value) {
+                                globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                                setState(() {
+                                  globals.selectedWidgetColor = value!;
+                                });
+                              },
+                            ),
+                    ),
+                  ),
+                ),
+
                 // Garso setting   
                 Container(
                   margin: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 0),
@@ -500,7 +552,7 @@ Widget build(BuildContext context) {
                                             text: 'Valiutos ženklas: ', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 20),
                                             children: <TextSpan>[
                                               TextSpan(
-                                                text: ' $identity '.toUpperCase(), style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 20, letterSpacing: 1.2),
+                                                text: ' $identity '.toUpperCase(), style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 20, letterSpacing: 1.2),
                                                 
                                               ),
                                             ]
@@ -519,7 +571,7 @@ Widget build(BuildContext context) {
                                   },
                                 );
                             } else {
-                                return CircularProgressIndicator(); 
+                                return const CircularProgressIndicator(); 
                             }
 
                             
@@ -550,7 +602,6 @@ Widget build(BuildContext context) {
   builder: (context, snapshot) {
     if (snapshot.hasData) {
       String? interval;
-      print(snapshot.data);
       if (snapshot.data == true) {
         interval = _intervals[0];
       } else {
@@ -574,7 +625,7 @@ Widget build(BuildContext context) {
                   children: <TextSpan>[
                     TextSpan(
                       text: ' $identity '.toUpperCase(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black54,
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
@@ -597,7 +648,7 @@ Widget build(BuildContext context) {
         },
       );
     } else {
-      return CircularProgressIndicator(); // or any other loading indicator
+      return const CircularProgressIndicator(); // or any other loading indicator
     }
   },
 ),
@@ -694,7 +745,7 @@ void removeDBData() async{
     final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
     if (settingsSnapshot.exists) {
       Map<String, dynamic> data = settingsSnapshot.data()!;
-      String bal = data['monthly'].toString();;
+      String bal = data['monthly'].toString();
       if(bal == 'true' || bal == 'false'){
         //print("pirmas ifas");
         return bal == 'true';

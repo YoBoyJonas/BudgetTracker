@@ -688,7 +688,7 @@ class _AddTabState extends State<AddTab> {
                 }
               }
               else{
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               }
 }
           )
@@ -842,7 +842,7 @@ class _AddTabState extends State<AddTab> {
     final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
     if (settingsSnapshot.exists) {
       Map<String, dynamic> data = settingsSnapshot.data()!;
-      String bal = data['monthly'].toString();;
+      String bal = data['monthly'].toString();
       if(bal == 'true' || bal == 'false'){
         //print("pirmas ifas");
         return bal == 'true';
