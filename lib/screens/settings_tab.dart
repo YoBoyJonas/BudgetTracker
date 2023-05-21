@@ -293,6 +293,7 @@ Widget build(BuildContext context) {
                               }).toList(),
                               value: globals.selected,
                               onChanged: (value) {
+                                updateBackground(value.toString());
                                 globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                                 setState(() {
                                   globals.selected = value!;
@@ -346,6 +347,7 @@ Widget build(BuildContext context) {
                               }).toList(),
                               value: globals.selectedWidgetColor,
                               onChanged: (value) {
+                                updateElementColor(value.toString());
                                 globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                                 setState(() {
                                   globals.selectedWidgetColor = value!;
@@ -375,6 +377,7 @@ Widget build(BuildContext context) {
                           trailing: Switch(
                             value: globals.soundEnabled,
                             onChanged: (bool value) {
+                              updateSound(value);
                               setState(() {
                                 globals.soundEnabled = value;
                               });
@@ -403,6 +406,7 @@ Widget build(BuildContext context) {
                             trailing: Switch(
                               value: globals.carryOverSurplusMoney,
                               onChanged: (bool value) {
+                                updateMoveResidual(value);
                                 setState(() {
                                   globals.carryOverSurplusMoney = value;
                                 });
@@ -729,7 +733,14 @@ void removeDBData() async{
     if (settingsSnapshot.exists) {
       Map<String, dynamic> data = settingsSnapshot.data()!;
       String bal = data['currency_sign'].toString();
-      return bal;
+      if(bal.isNotEmpty){
+        return bal;
+      }
+      else{
+              FirebaseFirestore.instance.collection(uid).doc('Settings').set({'currency_sign' : '\$'});
+      return '\$';
+      }
+
     }
     else
     {
@@ -772,5 +783,73 @@ void removeDBData() async{
     await curencySetting.update({'monthly' : false});
   }
 
+  }
+  void updateSound(bool value) async{
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['hasSound'].toString();
+      if(bal.isNotEmpty){
+        FirebaseFirestore.instance.collection(uid).doc('Settings').update({'hasSound' : value});
+      }
+      else{
+        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'hasSound' : value});
+      }
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'hasSound' : value});
+    }
+  }
+    void updateBackground(String value) async{
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['background'].toString();
+      if(bal.isNotEmpty){
+        FirebaseFirestore.instance.collection(uid).doc('Settings').update({'background' : value});
+      }
+      else{
+        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'background' : value});
+      }
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'background' : value});
+    }
+  }
+      void updateElementColor(String value) async{
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['elementColor'].toString();
+      if(bal.isNotEmpty){
+        FirebaseFirestore.instance.collection(uid).doc('Settings').update({'elementColor' : value});
+      }
+      else{
+        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'elementColor' : value});
+      }
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'elementColor' : value});
+    }
+  }
+  void updateMoveResidual(bool value) async{
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['moveResidual'].toString();
+      if(bal.isNotEmpty){
+        FirebaseFirestore.instance.collection(uid).doc('Settings').update({'moveResidual' : value});
+      }
+      else{
+        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'moveResidual' : value});
+      }
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'moveResidual' : value});
+    }
   }
 }
