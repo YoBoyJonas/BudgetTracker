@@ -7,6 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:budget_tracker/storage_service.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
+import 'package:provider/provider.dart';
+
+import '../background_provider.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({Key? key}) : super(key: key);
@@ -23,12 +26,27 @@ class _ProfileTabState extends State<ProfileTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            displayUserInformation(),
-          ]),
+    final backgroundProvider = Provider.of<BackgroundProvider>(context);
+    final backgroundImage = backgroundProvider.backgroundImage;
+    return MaterialApp(
+      home: Stack(
+        children: [
+          if (backgroundImage != null)  
+          Container(
+            decoration: BoxDecoration(
+            image: DecorationImage(image: backgroundImage!, fit: BoxFit.cover)
+            ),
+          ),
+
+          Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  displayUserInformation(),
+                ]),
+          ),
+        ],
+      ),
     );
   }
 
@@ -98,7 +116,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       ),
                       child: Text(
                         "Email: ${userAuth?.email}",
-                        style: const TextStyle(fontSize: 20,),
+                        style: const TextStyle(fontSize: 18, decoration: TextDecoration.none),
                       ),
                     )),
                 // Creation date from Firebase auth
@@ -117,7 +135,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       child: Text(
                         // may run into a crash.
                         "Created: ${DateFormat('yyyy-MM-dd').format(userAuth?.metadata.creationTime as DateTime)}",
-                        style: const TextStyle(fontSize: 20,),
+                        style: const TextStyle(fontSize: 18, decoration: TextDecoration.none),
                       ),
                     )),
                 // Additional custom user fields
@@ -135,7 +153,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       ),
                       child: Text(
                         "Nickname: ${_nickNameController.text}",
-                        style: const TextStyle(fontSize: 20,),
+                        style: const TextStyle(fontSize: 18, decoration: TextDecoration.none),
                       ),
                     )),
                 ElevatedButton(

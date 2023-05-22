@@ -10,6 +10,8 @@ import 'package:date_format/date_format.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
 import 'package:isoweek/isoweek.dart';
 
+import '../background_provider.dart';
+
 class AddTab extends StatefulWidget {
   const AddTab({Key? key}) : super(key: key);
 
@@ -463,9 +465,18 @@ class _AddTabState extends State<AddTab> {
 
   @override
   Widget build(BuildContext context) {  
+    final backgroundProvider = Provider.of<BackgroundProvider>(context);
+    final backgroundImage = backgroundProvider.backgroundImage;
     return MaterialApp(
       home: Stack(
         children: [
+          if (backgroundImage != null)  
+          Container(
+            decoration: BoxDecoration(
+            image: DecorationImage(image: backgroundImage!, fit: BoxFit.cover)
+            ),
+          ),
+
           Scaffold(
             backgroundColor: Colors.transparent,
             body: Consumer<ExpenseData>(  

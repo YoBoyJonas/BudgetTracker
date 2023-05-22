@@ -5,6 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:budget_tracker/globals/globals.dart' as globals;
 import 'package:isoweek/isoweek.dart';
+import 'package:provider/provider.dart';
+
+import '../background_provider.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -22,9 +25,18 @@ class _HomeTabState extends State<HomeTab> {
   DateTime todaysDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
+    final backgroundProvider = Provider.of<BackgroundProvider>(context);
+    final backgroundImage = backgroundProvider.backgroundImage;
     return MaterialApp(
       home: Stack(
         children: [
+          if (backgroundImage != null)  
+          Container(
+            decoration: BoxDecoration(
+            image: DecorationImage(image: backgroundImage!, fit: BoxFit.cover)
+            ),
+          ),
+          
           Scaffold(
               appBar: AppBar(
                 title: FutureBuilder<String>(
@@ -404,36 +416,82 @@ class _HomeTabState extends State<HomeTab> {
                       if(snapshot.data == true){
                         return Column(
                       children: [     
-                        Row(
-                          children: [
-                              Expanded(
+                        Container(
+                          alignment: Alignment.center,
+                          child: RichText(
+                          text: TextSpan(
+                            children: [
+                              WidgetSpan(
                                 child: Container(
-                                  alignment: Alignment.center,
-                                  child: const Text('PRIMINTUKAS', style: TextStyle(color: Colors.blue, letterSpacing: 2, fontSize: 26, fontWeight: FontWeight.bold, decoration: TextDecoration.none))
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(70), 
+                                      topRight: Radius.circular(70), 
+                                      bottomLeft: Radius.circular(70), 
+                                      bottomRight: Radius.circular(70)),
+                                  ),
+
+                                child: Padding(
+                                    padding: const EdgeInsets.only(left: 12, right: 12, top: 2, bottom: 2),
+                                    child: RichText (
+                                      textAlign: TextAlign.center,
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: "PRIMINTUKAS", 
+                                            style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 2, fontSize: 26, fontWeight: FontWeight.bold, decoration: TextDecoration.none)
+                                          ),
+                                        ]),)
                                 ),
-                              ),
-                          ],
+                                ),    
+                              ), 
+                            ],    
+                          ),
+                          ),
                         ),
+
                 
                         Container(padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.03)),
                           Row(
-                            children: [
+                          children: [
                               Padding(
                                 padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.02),
                                 child: RichText(
-                                  text: const TextSpan(
+                                  text: TextSpan(
                                     children: [
-                                      TextSpan(
-                                        text: "Daugiausiai išleista: ", 
-                                        style: TextStyle(color: Colors.blue, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)        
-                                      ),
-                                    ],
-                
+                                      WidgetSpan(
+                                        child: Container(
+                                          width: MediaQuery.of(context).size.width * 0.95,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(70), 
+                                              topRight: Radius.circular(70), 
+                                              bottomLeft: Radius.circular(70), 
+                                              bottomRight: Radius.circular(70)),
+                                          ),
+
+                                        child: Padding(
+                                            padding: const EdgeInsets.only(left: 12, right: 12, top: 2, bottom: 2),
+                                            child: RichText (
+                                              textAlign: TextAlign.center,
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: "Daugiausiai išleista ", 
+                                                    style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)
+                                                  ),
+                                                ]),)
+                                        ),
+                                        ),    
+                                      ), 
+                                    ],    
                                   ),
                                   ),
                                 ),
                             ]
-                          ),
+                        ),
                 
                         Row(
                           children: [
@@ -453,7 +511,7 @@ class _HomeTabState extends State<HomeTab> {
                                             decoration: TextDecoration.none,
                                             ),
                                           ),
-                                          Expanded(
+                                          Container(
                                             child: Text(
                                               snapshot.data!,
                                               maxLines: 1,
@@ -477,13 +535,11 @@ class _HomeTabState extends State<HomeTab> {
                                             decoration: TextDecoration.none,
                                             ),
                                           ),
-                                          Expanded(
-                                            child: Text(
-                                              'neturite išlaidų!',
-                                              style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                fontSize: 16,
-                                                decoration: TextDecoration.none
-                                              ),
+                                          Text(
+                                            'neturite išlaidų!',
+                                            style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                              fontSize: 16,
+                                              decoration: TextDecoration.none
                                             ),
                                           ),
                                         ],
@@ -499,128 +555,179 @@ class _HomeTabState extends State<HomeTab> {
                           
                         Row(
                           children: [
-                            Expanded(
-                              child: Container(
-                              padding: EdgeInsets.only(top: MediaQuery.of(context).size.width * 0.012, left: MediaQuery.of(context).size.width * 0.02),
-                child: FutureBuilder<String>(
-                                  future: getCurrencySign(),
-                                  builder: (context, snapshot1) {
-                                    if(snapshot1.hasData){
-                                    String sign = snapshot1.data!.toString();
+                            Container(
+                            padding: EdgeInsets.only(top: MediaQuery.of(context).size.width * 0.012, left: MediaQuery.of(context).size.width * 0.02),
+                              child: FutureBuilder<String>(
+                                future: getCurrencySign(),
+                                builder: (context, snapshot1) {
+                                  if(snapshot1.hasData){
+                                  String sign = snapshot1.data!.toString();
+                                  return FutureBuilder<double>(
+                                    future: getMaxExpense(),
+                                    builder: (context, snapshot){
+                                      if (snapshot.hasData) {
+                                        return Row(
+                                            children: [
+                                              const Text(
+                                                'išleista ',
+                                                style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                                decoration: TextDecoration.none,
+                                                ),
+                                              ),
+                                              Text(
+                                                '${snapshot.data!.toString()} $sign',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                  fontSize: 16,
+                                                  decoration: TextDecoration.none
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                      } else if (snapshot.hasError) {
+                                          return Row(
+                                            children: const [
+                                              Text(
+                                                'išleista ',
+                                                style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                                decoration: TextDecoration.none,
+                                                ),
+                                              ),
+                                              Text(
+                                                'neturite išlaidų!',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                  fontSize: 16,
+                                                  decoration: TextDecoration.none
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      return const SizedBox();
+                                    },
+                                  );} else {
                                     return FutureBuilder<double>(
-                                      future: getMaxExpense(),
-                                      builder: (context, snapshot){
-                                        if (snapshot.hasData) {
+                                    future: getMaxExpense(),
+                                    builder: (context, snapshot){
+                                      if (snapshot.hasData) {
+                                        return Row(
+                                            children: [
+                                              const Text(
+                                                'išleista ',
+                                                style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                                decoration: TextDecoration.none,
+                                                ),
+                                              ),
+                                              Text(
+                                                '${snapshot.data!.toString()} \$',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                  fontSize: 16,
+                                                  decoration: TextDecoration.none
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                      } else if (snapshot.hasError) {
                                           return Row(
-                                              children: [
-                                                const Text(
-                                                  'išleista ',
-                                                  style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: TextDecoration.none,
-                                                  ),
+                                            children: const [
+                                              Text(
+                                                'išleista ',
+                                                style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                                decoration: TextDecoration.none,
                                                 ),
-                                                Expanded(
-                                                  child: Text(
-                                                    '${snapshot.data!.toString()} $sign',
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                      fontSize: 16,
-                                                      decoration: TextDecoration.none
-                                                    ),
-                                                  ),
+                                              ),
+                                              Text(
+                                                'neturite išlaidų!',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                  fontSize: 16,
+                                                  decoration: TextDecoration.none
                                                 ),
-                                              ],
-                                            );
-                                        } else if (snapshot.hasError) {
-                                            return Row(
-                                              children: const [
-                                                Text(
-                                                  'išleista ',
-                                                  style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: TextDecoration.none,
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Text(
-                                                    'neturite išlaidų!',
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                      fontSize: 16,
-                                                      decoration: TextDecoration.none
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          }
-                                        return const SizedBox();
-                                      },
-                                    );} else {
-                                      return FutureBuilder<double>(
-                                      future: getMaxExpense(),
-                                      builder: (context, snapshot){
-                                        if (snapshot.hasData) {
-                                          return Row(
-                                              children: [
-                                                const Text(
-                                                  'išleista ',
-                                                  style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: TextDecoration.none,
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Text(
-                                                    '${snapshot.data!.toString()} \$',
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                      fontSize: 16,
-                                                      decoration: TextDecoration.none
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                        } else if (snapshot.hasError) {
-                                            return Row(
-                                              children: const [
-                                                Text(
-                                                  'išleista ',
-                                                  style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: TextDecoration.none,
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Text(
-                                                    'neturite išlaidų!',
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                      fontSize: 16,
-                                                      decoration: TextDecoration.none
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          }
-                                        return const SizedBox();
-                                      },
-                                    );
-                                    }
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      return const SizedBox();
+                                    },
+                                  );
                                   }
-                                ),
+                                }
                               ),
                             ),
                           ],
-                        ), 
-                            ],                                                  
+                        ),
+
+                        Row(
+                          children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.02),
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      WidgetSpan(
+                                        child: Container(
+                                          width: MediaQuery.of(context).size.width * 0.95,
+                                          decoration: BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius: const BorderRadius.only(
+                                              topLeft: Radius.circular(70), 
+                                              topRight: Radius.circular(70), 
+                                              bottomLeft: Radius.circular(70), 
+                                              bottomRight: Radius.circular(70)),
+                                            border: Border.all(
+                                              width: MediaQuery.of(context).size.width * 0.003,
+                                              color: Colors.brown, style: BorderStyle.solid,
+                                            )
+                                          ),
+
+                                        child: Padding(
+                                            padding: const EdgeInsets.only(left: 12, right: 12, top: 2, bottom: 2),
+                                            child: RichText (
+                                              textAlign: TextAlign.center,
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: "FONAS - ", 
+                                                    style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)
+                                                  ),
+
+                                                  TextSpan(
+                                                    text: globals.selected, 
+                                                    style: TextStyle(
+                                                      color: globals.selectedWidgetColor,
+                                                      letterSpacing: 1.8,
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold,
+                                                      decoration: TextDecoration.none,
+                                                      ),
+                                                  ),        
+
+                                                  TextSpan(
+                                                    text: " plytos", 
+                                                    style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)        
+                                                  ),
+
+                                                ]),)
+                                        ),
+                                        ),    
+                                      ), 
+                                    ],    
+                                  ),
+                                  ),
+                                ),
+                            ]
+                        ),
+                      ],                                                  
                         );
                       }
                       else{
@@ -628,92 +735,199 @@ class _HomeTabState extends State<HomeTab> {
                       children: [     
                         Row(
                           children: [
-                              Expanded(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  child: const Text('PRIMINTUKAS', style: TextStyle(color: Colors.blue, letterSpacing: 2, fontSize: 26, fontWeight: FontWeight.bold, decoration: TextDecoration.none))
+                            Padding(
+                              padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.02),
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 5, right: 10),
+                                child: Row(
+                                  children: [
+                                    RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        WidgetSpan(
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                              color: Colors.black,
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.zero, 
+                                                topRight: Radius.elliptical(20.0, 20.0), 
+                                                bottomLeft: Radius.elliptical(20.0, 20.0), 
+                                                bottomRight: Radius.circular(10.0)
+                                                ),
+                                            ),
+                                          child: Padding(
+                                          padding: const EdgeInsets.only(left: 12, right: 12, top: 5, bottom: 2),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.volume_up,
+                                                  size: MediaQuery.of(context).size.width * 0.07,
+                                                  color: globals.selectedWidgetColor
+                                                ),
+                                                SizedBox(width: MediaQuery.of(context).size.width * 0.02,),
+                                                Text(
+                                                'Off',
+                                                style: TextStyle(color: globals.selectedWidgetColor, decoration: TextDecoration.none, fontSize: 15)
+                                                )
+                                              ],),
+                                          ),                               
+                                          )                      
+                                        ),
+                                        
+                                      ],    
+                                    ),
+                                    ),
+                                    SizedBox(width: MediaQuery.of(context).size.width * 0.225),
+                                    RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          WidgetSpan(
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                              color: Colors.black,
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.elliptical(20.0, 20.0), 
+                                                topRight: Radius.zero, 
+                                                bottomLeft: Radius.circular(10.0), 
+                                                bottomRight: Radius.elliptical(20.0, 20.0)
+                                                ),
+                                            ),
+                            
+                                          child: Padding(
+                                              padding: const EdgeInsets.only(left: 12, right: 12, top: 5, bottom: 2),
+                                              child: RichText (
+                                                textAlign: TextAlign.center,
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: "PRIMINTUKAS", 
+                                                      style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 2, fontSize: 26, fontWeight: FontWeight.bold, decoration: TextDecoration.none)
+                                                    ),
+                                                  ]),)
+                                          ),
+                                          ),    
+                                        ), 
+                                        ]))
+                                  ],
                                 ),
                               ),
+                            ),
                           ],
                         ),
                 
-                        Container(padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.03)),
+                        Container(padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height * 0.01)),
                           Row(
-                            children: [
+                          children: [
                               Padding(
                                 padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.02),
                                 child: RichText(
-                                  text: const TextSpan(
+                                  text: TextSpan(
                                     children: [
-                                      TextSpan(
-                                        text: "Daugiausiai išleista: ", 
-                                        style: TextStyle(color: Colors.blue, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)        
-                                      ),
-                                    ],
-                
+                                      WidgetSpan(
+                                        child: Container(
+                                          width: MediaQuery.of(context).size.width * 0.95,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.elliptical(20.0, 20.0), 
+                                              topRight: Radius.elliptical(20.0, 20.0), 
+                                              bottomLeft: Radius.zero, 
+                                              bottomRight: Radius.zero),
+                                          ),
+
+                                        child: Padding(
+                                            padding: const EdgeInsets.only(left: 12, right: 12, top: 2, bottom: 2),
+                                            child: RichText (
+                                              textAlign: TextAlign.center,
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: "Daugiausiai išleista ", 
+                                                    style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)
+                                                  ),
+                                                ]),)
+                                        ),
+                                        ),    
+                                      ), 
+                                    ],    
                                   ),
                                   ),
                                 ),
                             ]
-                          ),
+                        ),
                 
                         Row(
                           children: [
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.007, left: MediaQuery.of(context).size.width * 0.02),
-                                child: FutureBuilder<String>(
-                                  future: getMaxWeeklyName(),
-                                  builder: (context, snapshot){
-                                    if (snapshot.hasData) {
-                                      return Row(
-                                        children: [
-                                          const Text(
-                                            'išlaida  ',
-                                            style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            decoration: TextDecoration.none,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              snapshot.data!,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                fontSize: 16,
-                                                decoration: TextDecoration.none
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
+                            Container(
+                              padding: EdgeInsets.only( left: MediaQuery.of(context).size.width * 0.02),
+                              child: FutureBuilder<String>(
+                                future: getMaxWeeklyName(),
+                                builder: (context, snapshot){
+                                  if (snapshot.hasData) {
+                                    return Row(
+                                      children: [
+                                        Container(
+                                          width: MediaQuery.of(context).size.width * 0.95,
+                                          decoration: const BoxDecoration(
+                                          color: Colors.black,
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                          child: RichText (
+                                            textAlign: TextAlign.center,
+                                            text: TextSpan(
+                                              children: [
+                                                WidgetSpan(
+                                                  child: 
+                                                  Text(
+                                                    snapshot.data!,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                      fontSize: 16,
+                                                      decoration: TextDecoration.none
+                                                    ),
+                                                  ),)
+                                              ]),)
+                                      ),
+                                        ),
+                                        
+                                      ],
+                                    );
                 
-                                    } else if (snapshot.hasError) {
-                                      return Row(
-                                        children: const [
-                                          Text(
-                                            'išlaida ',
-                                            style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            decoration: TextDecoration.none,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              'neturite išlaidų!',
-                                              style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                fontSize: 16,
-                                                decoration: TextDecoration.none
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    }
-                                    return const SizedBox();
-                                  },
-                                ),
+                                  } else if (snapshot.hasError) {
+                                    return Row(
+                                      children: [
+                                        Container(
+                                          width: MediaQuery.of(context).size.width * 0.95,
+                                          decoration: const BoxDecoration(
+                                          color: Colors.black,
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                          child: RichText (
+                                            textAlign: TextAlign.center,
+                                            text: const TextSpan(
+                                              children: [
+                                                WidgetSpan(
+                                                  child: 
+                                                  Text(
+                                                    "neturite išlaidų",
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                      fontSize: 16,
+                                                      decoration: TextDecoration.none
+                                                    ),
+                                                  ),)
+                                              ]),)
+                                      ),
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                  return const SizedBox();
+                                },
                               ),
                             ),
                           ],
@@ -721,127 +935,262 @@ class _HomeTabState extends State<HomeTab> {
                           
                         Row(
                           children: [
-                            Expanded(
-                              child: Container(
-                              padding: EdgeInsets.only(top: MediaQuery.of(context).size.width * 0.012, left: MediaQuery.of(context).size.width * 0.02),
-                child: FutureBuilder<String>(
-                                  future: getCurrencySign(),
-                                  builder: (context, snapshot1) {
-                                    if(snapshot1.hasData){
-                                    String sign = snapshot1.data!.toString();
+                            Container(
+                            padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.02),
+                              child: FutureBuilder<String>(
+                                future: getCurrencySign(),
+                                builder: (context, snapshot1) {
+                                  if(snapshot1.hasData){
+                                  String sign = snapshot1.data!.toString();
+                                  return FutureBuilder<double>(
+                                    future: getMaxWeeklyExpense(),
+                                    builder: (context, snapshot){
+                                      if (snapshot.hasData) {
+                                        return Row(
+                                            children: [
+                                              Container(
+                                                width: MediaQuery.of(context).size.width * 0.95,
+                                                decoration: const BoxDecoration(
+                                                color: Colors.black,
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                                child: RichText (
+                                                  textAlign: TextAlign.center,
+                                                  text: TextSpan(
+                                                    children: [
+                                                      WidgetSpan(
+                                                        child: 
+                                                        Text(
+                                                          '${snapshot.data!.toString()} $sign',
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                            fontSize: 16,
+                                                            decoration: TextDecoration.none
+                                                          ),
+                                                        ),)
+                                                    ]),)
+                                              ),
+                                              ),
+                                            ],
+                                          );
+                                      } else if (snapshot.hasError) {
+                                          return Row(
+                                            children: [
+                                              Container(
+                                                width: MediaQuery.of(context).size.width * 0.95,
+                                                decoration: const BoxDecoration(
+                                                color: Colors.black,
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                                child: RichText (
+                                                  textAlign: TextAlign.center,
+                                                  text: const TextSpan(
+                                                    children: [
+                                                      WidgetSpan(
+                                                        child: 
+                                                        Expanded(
+                                                          child: Text(
+                                                            "neturite išlaidų",
+                                                            maxLines: 1,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                              fontSize: 16,
+                                                              decoration: TextDecoration.none
+                                                            ),
+                                                          ),
+                                                      ),)
+                                                    ]),)
+                                              ) ,
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      return const SizedBox();
+                                    },
+                                  );} else {
                                     return FutureBuilder<double>(
-                                      future: getMaxWeeklyExpense(),
-                                      builder: (context, snapshot){
-                                        if (snapshot.hasData) {
+                                    future: getMaxWeeklyExpense(),
+                                    builder: (context, snapshot){
+                                      if (snapshot.hasData) {
+                                        return Row(
+                                            children: [
+                                              Container(
+                                                width: MediaQuery.of(context).size.width * 0.95,
+                                                decoration: const BoxDecoration(
+                                                color: Colors.black,
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                                child: RichText (
+                                                  textAlign: TextAlign.center,
+                                                  text: TextSpan(
+                                                    children: [
+                                                      WidgetSpan(
+                                                        child: 
+                                                        Expanded(
+                                                          child: Text(
+                                                            '${snapshot.data!.toString()} \$',
+                                                            maxLines: 1,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                              fontSize: 16,
+                                                              decoration: TextDecoration.none
+                                                            ),
+                                                          ),
+                                                      ),)
+                                                    ]),)
+                                              ),
+                                              ),
+                                            ],
+                                          );
+                                      } else if (snapshot.hasError) {
                                           return Row(
-                                              children: [
-                                                const Text(
-                                                  'išleista ',
-                                                  style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: TextDecoration.none,
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Text(
-                                                    '${snapshot.data!.toString()} $sign',
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                      fontSize: 16,
-                                                      decoration: TextDecoration.none
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                        } else if (snapshot.hasError) {
-                                            return Row(
-                                              children: const [
-                                                Text(
-                                                  'išleista ',
-                                                  style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: TextDecoration.none,
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Text(
-                                                    'neturite išlaidų!',
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                      fontSize: 16,
-                                                      decoration: TextDecoration.none
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          }
-                                        return const SizedBox();
-                                      },
-                                    );} else {
-                                      return FutureBuilder<double>(
-                                      future: getMaxWeeklyExpense(),
-                                      builder: (context, snapshot){
-                                        if (snapshot.hasData) {
-                                          return Row(
-                                              children: [
-                                                const Text(
-                                                  'išleista ',
-                                                  style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: TextDecoration.none,
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Text(
-                                                    '${snapshot.data!.toString()} \$',
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                      fontSize: 16,
-                                                      decoration: TextDecoration.none
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                        } else if (snapshot.hasError) {
-                                            return Row(
-                                              children: const [
-                                                Text(
-                                                  'išleista ',
-                                                  style: TextStyle(color: Colors.blue, letterSpacing: 1,fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: TextDecoration.none,
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Text(
-                                                    'neturite išlaidų!',
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                      fontSize: 16,
-                                                      decoration: TextDecoration.none
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          }
-                                        return const SizedBox();
-                                      },
-                                    );
-                                    }
+                                            children: [
+                                              Container(
+                                                width: MediaQuery.of(context).size.width * 0.95,
+                                                decoration: const BoxDecoration(
+                                                color: Colors.black,
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                                child: RichText (
+                                                  textAlign: TextAlign.center,
+                                                  text: const TextSpan(
+                                                    children: [
+                                                      WidgetSpan(
+                                                        child: 
+                                                        Expanded(
+                                                          child: Text(
+                                                            "neturite išlaidų",
+                                                            maxLines: 1,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                              fontSize: 16,
+                                                              decoration: TextDecoration.none
+                                                            ),
+                                                          ),
+                                                      ),)
+                                                    ]),)
+                                              ) ,
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      return const SizedBox();
+                                    },
+                                  );
                                   }
-                                ),
+                                }
                               ),
                             ),
                           ],
-                        ), 
+                        ),
+
+                        Row(
+                          children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.02),
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      WidgetSpan(
+                                        child: Container(
+                                          width: MediaQuery.of(context).size.width * 0.95,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.zero, 
+                                              topRight: Radius.zero, 
+                                              bottomLeft: Radius.elliptical(20.0, 20.0), 
+                                              bottomRight: Radius.elliptical(20.0, 20.0)),
+                                          ),
+
+                                        child: Padding(
+                                            padding: const EdgeInsets.only(left: 12, right: 12, top: 2, bottom: 2),
+                                            child: RichText (
+                                              textAlign: TextAlign.center,
+                                              text: const TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: "Daugiausiai išleista ", 
+                                                    style: TextStyle(color: Colors.transparent, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)
+                                                  ),
+                                                ]),)
+                                        ),
+                                        ),    
+                                      ), 
+                                    ],    
+                                  ),
+                                  ),
+                                ),
+                            ]
+                        ),
+
+                        SizedBox(height: MediaQuery.of(context).size.width * 0.05),
+                        Row(
+                          children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.02),
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      WidgetSpan(
+                                        child: Container(
+                                          width: MediaQuery.of(context).size.width * 0.95,
+                                          decoration: BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius: const BorderRadius.only(
+                                              topLeft: Radius.circular(70), 
+                                              topRight: Radius.circular(70), 
+                                              bottomLeft: Radius.circular(70), 
+                                              bottomRight: Radius.circular(70)),
+                                            border: Border.all(
+                                              width: MediaQuery.of(context).size.width * 0.003,
+                                              color: Colors.brown, style: BorderStyle.solid,
+                                            )
+                                          ),
+
+                                        child: Padding(
+                                            padding: const EdgeInsets.only(left: 12, right: 12, top: 2, bottom: 2),
+                                            child: RichText (
+                                              textAlign: TextAlign.center,
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: "FONAS - ", 
+                                                    style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)
+                                                  ),
+
+                                                  TextSpan(
+                                                    text: globals.selected, 
+                                                    style: TextStyle(
+                                                      color: globals.selectedWidgetColor,
+                                                      letterSpacing: 1.8,
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold,
+                                                      decoration: TextDecoration.none,
+                                                      ),
+                                                  ),
+                                                  
+
+                                                  TextSpan(
+                                                    text: " plytos", 
+                                                    style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)        
+                                                  ),
+
+                                                ]),)
+                                        ),
+                                        ),    
+                                      ), 
+                                    ],    
+                                  ),
+                                  ),
+                                ),
+                            ]
+                        ),
                             ],                                                  
                         );
                       }
