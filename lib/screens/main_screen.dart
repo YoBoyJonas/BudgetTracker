@@ -32,35 +32,73 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     loadBackgroundImage();
+    loadWidgetColor();
+    loadSoundOption();
   }
 
   void loadBackgroundImage() async {
-  var bgDoc = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
-  var bgName = bgDoc.data()!['background'] as String;
-  var bgIndex = globals.identities.indexOf(bgName);
+    var bgDoc = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    var bgName = bgDoc.data()!['background'] as String;
+    var bgIndex = globals.identities.indexOf(bgName);
 
-  if (bgIndex >= 0 && bgIndex < globals.bg.length) {
-    setState(() {
-      globals.selected = bgName; 
-      globals.backgroundIndex = bgIndex;
-      backgroundImage = globals.bg[bgIndex];
-    });
+    if (bgIndex >= 0 && bgIndex < globals.bg.length) {
+      setState(() {
+        globals.selected = bgName; 
+        globals.backgroundIndex = bgIndex;
+        backgroundImage = globals.bg[bgIndex];
+      });
 
-    // Update the background image in the provider
-    Provider.of<BackgroundProvider>(context, listen: false).updateBackgroundImage(backgroundImage!);
-  } else {
-    setState(() {
-      // Set a fallback image if the specified background name is not found
-      globals.selected = bgName; 
-      globals.backgroundIndex = bgIndex;
-      backgroundImage = globals.bg[0];
-    });
+      // Update the background image in the provider
+      Provider.of<BackgroundProvider>(context, listen: false).updateBackgroundImage(backgroundImage!);
+    } else {
+      setState(() {
+        // Set a fallback image if the specified background name is not found
+        globals.selected = bgName; 
+        globals.backgroundIndex = bgIndex;
+        backgroundImage = globals.bg[0];
+      });
 
-    // Update the background image in the provider
-    Provider.of<BackgroundProvider>(context, listen: false).updateBackgroundImage(backgroundImage!);
-    _backgroundProvider.updateBackgroundImage(backgroundImage!);
-  }
+      // Update the background image in the provider
+      Provider.of<BackgroundProvider>(context, listen: false).updateBackgroundImage(backgroundImage!);
+      _backgroundProvider.updateBackgroundImage(backgroundImage!);
+    }
 }
+
+  void loadWidgetColor() async {
+    var bgDoc = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    var bgName = bgDoc.data()!['elementColor'];
+    var bgIndex = globals.selectedWidgetColorList.indexWhere(
+      (color) => color.toString() == bgName.toString());
+
+    if (bgIndex >= 0 && bgIndex < globals.bg.length) {
+      setState(() {
+        globals.selectedWidgetColor = globals.selectedWidgetColorList[bgIndex];
+      });
+
+      // Update the background image in the provider
+      Provider.of<BackgroundProvider>(context, listen: false).updateWidgetColor(globals.selectedWidgetColor);
+    } else {
+      setState(() {
+        // Set a fallback image if the specified background name is not found
+        globals.selectedWidgetColor = globals.selectedWidgetColorList[bgIndex];
+      });
+
+      // Update the background image in the provider
+      Provider.of<BackgroundProvider>(context, listen: false).updateWidgetColor(globals.selectedWidgetColor);
+    }
+  }
+
+  void loadSoundOption() async {
+    var bgDoc = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    var bgName = bgDoc.data()!['hasSound'];
+
+      setState(() {
+        globals.soundEnabled = bgName;
+      });
+
+      // Update the background image in the provider
+      Provider.of<BackgroundProvider>(context, listen: false).updateSound(globals.soundEnabled);
+  }
 
   Widget buildTabContent(int index) {
   switch (index) {
@@ -78,22 +116,6 @@ class _MainScreenState extends State<MainScreen> {
       return const HomeTab();
   }
 }
-
-void updateBackground(String value) async {
-    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
-    if (settingsSnapshot.exists) {
-      Map<String, dynamic> data = settingsSnapshot.data()!;
-      String bal = data['background'].toString();
-      if (bal.isNotEmpty) {
-        FirebaseFirestore.instance.collection(uid).doc('Settings').update({'background': value});
-      } else {
-        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'background': value});
-      }
-    } else {
-      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'background': value});
-    }
-    loadBackgroundImage(); // Call the function to reload the background image
-  }
 
   @override
   Widget build(BuildContext context) {

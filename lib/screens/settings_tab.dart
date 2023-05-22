@@ -47,6 +47,8 @@ void initState() {
   fetchMonthlyIncome();
 }
 
+
+
 void updateBackground(String value) async {
     final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
     if (settingsSnapshot.exists) {
@@ -61,12 +63,53 @@ void updateBackground(String value) async {
       FirebaseFirestore.instance.collection(uid).doc('Settings').set({'background': value});
     }
     Provider.of<BackgroundProvider>(context, listen: false).updateBackgroundImage(globals.bg[globals.backgroundIndex]);
+
+    
   }
+
+void updateElementColor(String value) async{
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['elementColor'].toString();
+      if(bal.isNotEmpty){
+        FirebaseFirestore.instance.collection(uid).doc('Settings').update({'elementColor' : value});
+      }
+      else{
+        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'elementColor' : value});
+      }
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'elementColor' : value});
+    }
+    Provider.of<BackgroundProvider>(context, listen: false).updateWidgetColor(globals.selectedWidgetColor);
+  }
+
+void updateSound(bool value) async{
+    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+    if (settingsSnapshot.exists) {
+      Map<String, dynamic> data = settingsSnapshot.data()!;
+      String bal = data['hasSound'].toString();
+      if(bal.isNotEmpty){
+        FirebaseFirestore.instance.collection(uid).doc('Settings').update({'hasSound' : value});
+      }
+      else{
+        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'hasSound' : value});
+      }
+    }
+    else
+    {
+      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'hasSound' : value});
+    }
+
+    Provider.of<BackgroundProvider>(context, listen: false).updateSound(globals.soundEnabled);
+  }  
 
 @override
 Widget build(BuildContext context) {
   final backgroundProvider = Provider.of<BackgroundProvider>(context);
-final backgroundImage = backgroundProvider.backgroundImage;
+  final backgroundImage = backgroundProvider.backgroundImage;
   return ChangeNotifierProvider(
     create: (_) => BackgroundProvider(),
     child: MaterialApp(
@@ -90,31 +133,32 @@ final backgroundImage = backgroundProvider.backgroundImage;
                     //////////////////////////////////////////////////////////////
               
                     // Pirmasis settings button nakinantis duomenu bazes duomenis
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 40, 15, 10),               
-                      child: Center(
-                        child: TextButton(
-                          onPressed: () {
-                            removeDBData();
-                            globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(7.0),
-                            decoration: BoxDecoration(
-                              color: globals.selectedWidgetColor,
-                              borderRadius: BorderRadius.circular(70),
-                                      border: Border.all(
-                                        width: MediaQuery.of(context).size.width * 0.007,
-                                        color: Colors.brown, style: BorderStyle.solid,
-                                      )
-                              ),
-                            child: const Text('Naikinti duomenų bazės duomenis (laikina)', style: TextStyle(color: Colors.red, letterSpacing: 1.5, fontSize: 15))
-                          ),              
-                        ),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.fromLTRB(15, 40, 15, 10),               
+                    //   child: Center(
+                    //     child: TextButton(
+                    //       onPressed: () {
+                    //         removeDBData();
+                    //         globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                    //       },
+                    //       child: Container(
+                    //         padding: const EdgeInsets.all(7.0),
+                    //         decoration: BoxDecoration(
+                    //           color: globals.selectedWidgetColor,
+                    //           borderRadius: BorderRadius.circular(70),
+                    //                   border: Border.all(
+                    //                     width: MediaQuery.of(context).size.width * 0.007,
+                    //                     color: Colors.brown, style: BorderStyle.solid,
+                    //                   )
+                    //           ),
+                    //         child: const Text('Naikinti duomenų bazės duomenis (laikina)', style: TextStyle(color: Colors.red, letterSpacing: 1.5, fontSize: 15))
+                    //       ),              
+                    //     ),
+                    //   ),
+                    // ),
               
                     // Antrasis settings buttonas leidziantis isnaikinti išsaugotą kategoriją
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.04),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -811,40 +855,7 @@ void removeDBData() async{
   }
 
   }
-  void updateSound(bool value) async{
-    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
-    if (settingsSnapshot.exists) {
-      Map<String, dynamic> data = settingsSnapshot.data()!;
-      String bal = data['hasSound'].toString();
-      if(bal.isNotEmpty){
-        FirebaseFirestore.instance.collection(uid).doc('Settings').update({'hasSound' : value});
-      }
-      else{
-        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'hasSound' : value});
-      }
-    }
-    else
-    {
-      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'hasSound' : value});
-    }
-  }
-      void updateElementColor(String value) async{
-    final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
-    if (settingsSnapshot.exists) {
-      Map<String, dynamic> data = settingsSnapshot.data()!;
-      String bal = data['elementColor'].toString();
-      if(bal.isNotEmpty){
-        FirebaseFirestore.instance.collection(uid).doc('Settings').update({'elementColor' : value});
-      }
-      else{
-        FirebaseFirestore.instance.collection(uid).doc('Settings').set({'elementColor' : value});
-      }
-    }
-    else
-    {
-      FirebaseFirestore.instance.collection(uid).doc('Settings').set({'elementColor' : value});
-    }
-  }
+      
   void updateMoveResidual(bool value) async{
     final settingsSnapshot = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
     if (settingsSnapshot.exists) {
