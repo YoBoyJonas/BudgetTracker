@@ -29,23 +29,26 @@ class _ProfileTabState extends State<ProfileTab> {
     final backgroundProvider = Provider.of<BackgroundProvider>(context);
     final backgroundImage = backgroundProvider.backgroundImage;
     return MaterialApp(
-      home: Stack(
-        children: [
-          if (backgroundImage != null)  
-          Container(
-            decoration: BoxDecoration(
-            image: DecorationImage(image: backgroundImage!, fit: BoxFit.cover)
+      home: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            if (backgroundImage != null)  
+            Container(
+              decoration: BoxDecoration(
+              image: DecorationImage(image: backgroundImage!, fit: BoxFit.cover)
+              ),
             ),
-          ),
-
-          Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  displayUserInformation(),
-                ]),
-          ),
-        ],
+      
+            Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    displayUserInformation(),
+                  ]),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -246,7 +249,16 @@ class _ProfileTabState extends State<ProfileTab> {
                             FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(uid)
-                                .set(userModel.toJson());
+                                .set(userModel.toJson())
+                                .then((_) {
+                                  // Show a snackbar
+                                  final snackBar = SnackBar(
+                                    content: Text("Sėkmingai pakeistas pavadinimas, ${userModel.nickName}"),
+                                    duration: const Duration(seconds: 2),
+                                  );
+
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                });
 
                             Navigator.of(context).pop();
                           },
