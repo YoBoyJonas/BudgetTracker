@@ -230,24 +230,33 @@ Widget build(BuildContext context) {
                           onPressed: (){
                             globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                             var collection = FirebaseFirestore.instance.collection(uid).doc('Categories').collection(_selectedCategoryType);
-                            if (selectedExpenseCategory != "0"){
-                              collection.doc(selectedExpenseCategory).update({
-                                'status': 'deleted'
-                              }).then((value){
-                                setState(() {                    
-                                  selectedExpenseCategory = "0";
-                                });
+                            // Determine selected category name
+                            String categoryName = _selectedCategoryType == 'Expense_Categories'
+                              ? selectedExpenseCategory
+                              : selectedIncomeCategory;
+
+                              if (categoryName != "0") {
+                              collection.doc(categoryName).get().then((snapshot) {
+                                if (snapshot.exists) {
+                                  // Get snapshot data to display in snackbar which category was deleted
+                                  var categoryData = snapshot.data();
+                                  String category = categoryData?['category'];
+                                  collection.doc(categoryName).update({'status': 'deleted'}).then((value) {
+                                    showSnackbar(context, "Sėkmingai panaikinta $category kategorija", const Duration(seconds: 2));
+                                    setState(() {
+                                      if (_selectedCategoryType == 'Expense_Categories') {
+                                        selectedExpenseCategory = "0";
+                                      } else {
+                                        selectedIncomeCategory = "0";
+                                      }
+                                    });
+                                  }).catchError((error) {
+                                    showSnackbar(context, "Nepavyko panaikinti $category kategorijos. $error", const Duration(seconds: 2));
+                                  });
+                                }
                               });
                             }
-                            else{
-                              collection.doc(selectedIncomeCategory).update({
-                                'status': 'deleted'
-                              }).then((value){
-                                setState(() {                    
-                                  selectedIncomeCategory = "0";
-                                });
-                              });
-                            }
+
                           },
                           icon: Icon(Icons.delete, color: globals.selectedWidgetColor),
                         ),
@@ -363,6 +372,7 @@ Widget build(BuildContext context) {
                                 value: globals.selected,
                                 onChanged: (value) {
                                   updateBackground(value.toString());
+                                  showSnackbar(context, "Sėkmingai pakeistas fonas į $value plytos", const Duration(seconds: 2));
                                   globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                                   setState(() {
                                     
@@ -418,6 +428,7 @@ Widget build(BuildContext context) {
                                 value: globals.selectedWidgetColor,
                                 onChanged: (value) {
                                   updateElementColor(value.toString());
+                                  showSnackbar(context, "Sėkmingas pakeista elementų spalva", const Duration(seconds: 2));
                                   globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
                                   setState(() {
                                     globals.selectedWidgetColor = value!;
@@ -448,6 +459,11 @@ Widget build(BuildContext context) {
                               value: globals.soundEnabled,
                               onChanged: (bool value) {
                                 updateSound(value);
+                                if (value){
+                                  showSnackbar(context, "Sėkmingai įjungtas garsas", const Duration(seconds: 1));
+                                } else {
+                                  showSnackbar(context, "Sėkmingai išjungtas garsas", const Duration(seconds: 1));
+                                }
                                 setState(() {
                                   globals.soundEnabled = value;
                                 });
@@ -477,6 +493,11 @@ Widget build(BuildContext context) {
                                 value: globals.carryOverSurplusMoney,
                                 onChanged: (bool value) {
                                   updateMoveResidual(value);
+                                  if (value){
+                                    showSnackbar(context, "Sėkmingai įjungtas pinigų perkėlimas", const Duration(seconds: 1));
+                                  } else {
+                                    showSnackbar(context, "Sėkmingai išjungtas pinigų perkėlimas", const Duration(seconds: 1));
+                                  }
                                   setState(() {
                                     globals.carryOverSurplusMoney = value;
                                   });
@@ -528,7 +549,12 @@ Widget build(BuildContext context) {
                                       FirebaseFirestore.instance
                                         .collection(uid)
                                         .doc('monthly_income')
-                                        .set({'income': _monthlyIncome});
+                                        .set({'income': _monthlyIncome})
+                                        .then((_) {
+                                          showSnackbar(context, "Sėkmingai pakeistos pajamos į $_monthlyIncome", const Duration(seconds: 2));
+                                        }).catchError((error) {
+                                          showSnackbar(context, "Nepavyko pakeist pajamų. $error", const Duration(seconds: 2));
+                                        });
   
                                       _monthlyIncomeController.text = '$_monthlyIncome';
                                       Navigator.pop(context);
@@ -639,6 +665,7 @@ Widget build(BuildContext context) {
                                     value: sign,
                                     onChanged: (value) {
                                       globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                                      showSnackbar(context, "Sėkmingai pakeista valiuta į $value", const Duration(seconds: 1));
                                       setState(() {
                                         updateCurrencySign(value.toString());
                                       });
@@ -716,6 +743,11 @@ Widget build(BuildContext context) {
           onChanged: (value1) {
             //print(value1);
             globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+            if(value1 == 'Mėnesinis'){
+              showSnackbar(context, "Sėkmingai nustatyas mėnesinis intervalas", const Duration(seconds: 2));
+            } else {
+              showSnackbar(context, "Sėkmingai nustatyas savaitinis intervalas", const Duration(seconds: 2));
+            }
             setState(() {
               updateInterval(value1.toString());
             });
@@ -872,6 +904,14 @@ void removeDBData() async{
     {
       FirebaseFirestore.instance.collection(uid).doc('Settings').set({'moveResidual' : value});
     }
+  }
+
+  void showSnackbar(BuildContext context, String message, Duration duration) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
     
