@@ -886,6 +886,9 @@ Future<void> calculateMaxExpense() async{
     final nameToTotalAmount = <String, double>{};
     var todaysDate = DateTime.now();
     final today = formatDate(todaysDate, [yyyy, mm]);
+
+    //reset the old value (needs to be here because of removes of elements)
+    await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''MaxExpense').update({'Amount': 0});
     
     if (docList.isEmpty){
       await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''MaxExpense')

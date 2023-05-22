@@ -133,29 +133,29 @@ Widget build(BuildContext context) {
                     //////////////////////////////////////////////////////////////
               
                     // Pirmasis settings button nakinantis duomenu bazes duomenis
-                    // Padding(
-                    //   padding: const EdgeInsets.fromLTRB(15, 40, 15, 10),               
-                    //   child: Center(
-                    //     child: TextButton(
-                    //       onPressed: () {
-                    //         removeDBData();
-                    //         globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
-                    //       },
-                    //       child: Container(
-                    //         padding: const EdgeInsets.all(7.0),
-                    //         decoration: BoxDecoration(
-                    //           color: globals.selectedWidgetColor,
-                    //           borderRadius: BorderRadius.circular(70),
-                    //                   border: Border.all(
-                    //                     width: MediaQuery.of(context).size.width * 0.007,
-                    //                     color: Colors.brown, style: BorderStyle.solid,
-                    //                   )
-                    //           ),
-                    //         child: const Text('Naikinti duomenų bazės duomenis (laikina)', style: TextStyle(color: Colors.red, letterSpacing: 1.5, fontSize: 15))
-                    //       ),              
-                    //     ),
-                    //   ),
-                    // ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 40, 15, 10),               
+                      child: Center(
+                        child: TextButton(
+                          onPressed: () {
+                            removeDBData();
+                            globals.audioPlayer.playSoundEffect(globals.SoundEffect.buttonClick);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(7.0),
+                            decoration: BoxDecoration(
+                              color: globals.selectedWidgetColor,
+                              borderRadius: BorderRadius.circular(70),
+                                      border: Border.all(
+                                        width: MediaQuery.of(context).size.width * 0.007,
+                                        color: Colors.brown, style: BorderStyle.solid,
+                                      )
+                              ),
+                            child: const Text('Naikinti duomenų bazės duomenis (laikina)', style: TextStyle(color: Colors.red, letterSpacing: 1.5, fontSize: 15))
+                          ),              
+                        ),
+                      ),
+                    ),
               
                     // Antrasis settings buttonas leidziantis isnaikinti išsaugotą kategoriją
                     SizedBox(height: MediaQuery.of(context).size.height * 0.04),

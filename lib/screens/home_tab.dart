@@ -680,17 +680,15 @@ class _HomeTabState extends State<HomeTab> {
                                                     children: [
                                                       WidgetSpan(
                                                         child: 
-                                                        Expanded(
-                                                          child: Text(
-                                                            "neturite išlaidų",
-                                                            maxLines: 1,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                              fontSize: 16,
-                                                              decoration: TextDecoration.none
-                                                            ),
+                                                        Text(
+                                                          "neturite išlaidų",
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                            fontSize: 16,
+                                                            decoration: TextDecoration.none
                                                           ),
-                                                      ),)
+                                                        ),)
                                                     ]),)
                                               ) ,
                                               ),
@@ -1158,17 +1156,15 @@ class _HomeTabState extends State<HomeTab> {
                                                     children: [
                                                       WidgetSpan(
                                                         child: 
-                                                        Expanded(
-                                                          child: Text(
-                                                            "neturite išlaidų",
-                                                            maxLines: 1,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                              fontSize: 16,
-                                                              decoration: TextDecoration.none
-                                                            ),
+                                                        Text(
+                                                          "neturite išlaidų",
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                            fontSize: 16,
+                                                            decoration: TextDecoration.none
                                                           ),
-                                                      ),)
+                                                        ),)
                                                     ]),)
                                               ) ,
                                               ),
@@ -1197,17 +1193,15 @@ class _HomeTabState extends State<HomeTab> {
                                                     children: [
                                                       WidgetSpan(
                                                         child: 
-                                                        Expanded(
-                                                          child: Text(
-                                                            '${snapshot.data!.toString()} \$',
-                                                            maxLines: 1,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                              fontSize: 16,
-                                                              decoration: TextDecoration.none
-                                                            ),
+                                                        Text(
+                                                          '${snapshot.data!.toString()} \$',
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: const TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                            fontSize: 16,
+                                                            decoration: TextDecoration.none
                                                           ),
-                                                      ),)
+                                                        ),)
                                                     ]),)
                                               ),
                                               ),
@@ -1229,17 +1223,15 @@ class _HomeTabState extends State<HomeTab> {
                                                     children: [
                                                       WidgetSpan(
                                                         child: 
-                                                        Expanded(
-                                                          child: Text(
-                                                            "neturite išlaidų",
-                                                            maxLines: 1,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
-                                                              fontSize: 16,
-                                                              decoration: TextDecoration.none
-                                                            ),
+                                                        Text(
+                                                          "neturite išlaidų",
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: TextStyle(color: Colors.redAccent,letterSpacing: 1.5,
+                                                            fontSize: 16,
+                                                            decoration: TextDecoration.none
                                                           ),
-                                                      ),)
+                                                        ),)
                                                     ]),)
                                               ) ,
                                               ),
