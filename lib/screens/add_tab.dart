@@ -892,8 +892,7 @@ Future<void> calculateMaxExpense() async{
     if (maxExpenseBalanceReset.exists) {
       await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''MaxExpense').update({'Amount': 0});
     }
-
-    
+ 
     if (docList.isEmpty){
       await FirebaseFirestore.instance.collection(uid).doc('Amounts').collection('Expenses').doc('$today''MaxExpense')
             .set({'Name' : 0, 'Amount' : 0});

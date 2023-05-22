@@ -133,7 +133,7 @@ Widget build(BuildContext context) {
                     //////////////////////////////////////////////////////////////
               
                     // Pirmasis settings button nakinantis duomenu bazes duomenis
-                    Padding(
+                    /*Padding(
                       padding: const EdgeInsets.fromLTRB(15, 40, 15, 10),               
                       child: Center(
                         child: TextButton(
@@ -155,7 +155,7 @@ Widget build(BuildContext context) {
                           ),              
                         ),
                       ),
-                    ),
+                    ),*/
               
                     // Antrasis settings buttonas leidziantis isnaikinti išsaugotą kategoriją
                     SizedBox(height: MediaQuery.of(context).size.height * 0.04),
