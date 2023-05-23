@@ -466,7 +466,7 @@ class _HomeTabState extends State<HomeTab> {
                                       ],    
                                     ),
                                     ),
-                                    SizedBox(width: MediaQuery.of(context).size.width * 0.225),
+                                    SizedBox(width: MediaQuery.of(context).size.width * 0.2),
                                     RichText(
                                       text: TextSpan(
                                         children: [
