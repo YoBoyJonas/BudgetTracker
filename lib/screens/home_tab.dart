@@ -466,7 +466,7 @@ class _HomeTabState extends State<HomeTab> {
                                       ],    
                                     ),
                                     ),
-                                    SizedBox(width: MediaQuery.of(context).size.width * 0.2),
+                                    SizedBox(width: MediaQuery.of(context).size.width * 0.17),
                                     RichText(
                                       text: TextSpan(
                                         children: [
@@ -942,7 +942,7 @@ class _HomeTabState extends State<HomeTab> {
                                       ],    
                                     ),
                                     ),
-                                    SizedBox(width: MediaQuery.of(context).size.width * 0.2),
+                                    SizedBox(width: MediaQuery.of(context).size.width * 0.17),
                                     RichText(
                                       text: TextSpan(
                                         children: [
