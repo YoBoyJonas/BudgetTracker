@@ -37,13 +37,26 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void loadBackgroundImage() async {
-    var bgDoc = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
-    var bgName = bgDoc.data()!['background'] as String;
+  var bgDoc = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+  if (!bgDoc.exists) {
+    setState(() {
+      globals.selected = globals.identities[0];
+      backgroundImage = globals.bg[0];
+    });
+
+    // Update the background image in the provider
+    Provider.of<BackgroundProvider>(context, listen: false).updateBackgroundImage(backgroundImage!);
+
+    return;
+  }
+
+  var bgName = bgDoc.data()!['background'] as String?;
+  if (bgName != null) {
     var bgIndex = globals.identities.indexOf(bgName);
 
     if (bgIndex >= 0 && bgIndex < globals.bg.length) {
       setState(() {
-        globals.selected = bgName; 
+        globals.selected = bgName;
         globals.backgroundIndex = bgIndex;
         backgroundImage = globals.bg[bgIndex];
       });
@@ -51,54 +64,100 @@ class _MainScreenState extends State<MainScreen> {
       // Update the background image in the provider
       Provider.of<BackgroundProvider>(context, listen: false).updateBackgroundImage(backgroundImage!);
     } else {
+      // Set a fallback image if the specified background name is not found
       setState(() {
-        // Set a fallback image if the specified background name is not found
-        globals.selected = bgName; 
-        globals.backgroundIndex = bgIndex;
         backgroundImage = globals.bg[0];
       });
 
       // Update the background image in the provider
       Provider.of<BackgroundProvider>(context, listen: false).updateBackgroundImage(backgroundImage!);
-      _backgroundProvider.updateBackgroundImage(backgroundImage!);
     }
+  } else {
+    // Handle the case when the value is null
+    setState(() {
+      globals.selected = globals.identities[0];
+      backgroundImage = globals.bg[0];
+    });
+
+    // Update the background image in the provider
+    Provider.of<BackgroundProvider>(context, listen: false).updateBackgroundImage(backgroundImage!);
+  }
 }
 
-  void loadWidgetColor() async {
-    var bgDoc = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
-    var bgName = bgDoc.data()!['elementColor'];
-    var bgIndex = globals.selectedWidgetColorList.indexWhere(
-      (color) => color.toString() == bgName.toString());
 
-    if (bgIndex >= 0 && bgIndex < globals.bg.length) {
+  void loadWidgetColor() async {
+  var bgDoc = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+  if (!bgDoc.exists) {
+    setState(() {
+      globals.selectedWidgetColor = globals.selectedWidgetColorList[0];
+    });
+
+    // Update the widget color in the provider
+    Provider.of<BackgroundProvider>(context, listen: false).updateWidgetColor(globals.selectedWidgetColor);
+
+    return;
+  }
+
+  var bgName = bgDoc.data()!['elementColor'];
+  if (bgName != null) {
+    var bgIndex = globals.selectedWidgetColorList.indexWhere(
+      (color) => color.toString() == bgName.toString(),
+    );
+
+    if (bgIndex >= 0 && bgIndex < globals.selectedWidgetColorList.length) {
       setState(() {
         globals.selectedWidgetColor = globals.selectedWidgetColorList[bgIndex];
       });
 
-      // Update the background image in the provider
+      // Update the widget color in the provider
       Provider.of<BackgroundProvider>(context, listen: false).updateWidgetColor(globals.selectedWidgetColor);
     } else {
+      // Set a fallback color if the specified color is not found
       setState(() {
-        // Set a fallback image if the specified background name is not found
-        globals.selectedWidgetColor = globals.selectedWidgetColorList[bgIndex];
+        globals.selectedWidgetColor = globals.selectedWidgetColorList[0];
       });
 
-      // Update the background image in the provider
+      // Update the widget color in the provider
       Provider.of<BackgroundProvider>(context, listen: false).updateWidgetColor(globals.selectedWidgetColor);
     }
+  } else {
+    // Handle the case when the value is null
+    setState(() {
+      globals.selectedWidgetColor = globals.selectedWidgetColorList[0];
+    });
+
+    // Update the widget color in the provider
+    Provider.of<BackgroundProvider>(context, listen: false).updateWidgetColor(globals.selectedWidgetColor);
   }
+}
+
 
   void loadSoundOption() async {
-    var bgDoc = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
-    var bgName = bgDoc.data()!['hasSound'];
-
-      setState(() {
-        globals.soundEnabled = bgName;
-      });
-
-      // Update the background image in the provider
-      Provider.of<BackgroundProvider>(context, listen: false).updateSound(globals.soundEnabled);
+  var bgDoc = await FirebaseFirestore.instance.collection(uid).doc('Settings').get();
+  if (!bgDoc.exists){
+    setState(() {
+      globals.soundEnabled = true;
+    });
+    return;
   }
+  var bgName = bgDoc.data()!['hasSound'];
+  if (bgName != null && bgName is bool) {
+    setState(() {
+      globals.soundEnabled = bgName;
+    });
+
+    // Update the sound option in the provider
+    Provider.of<BackgroundProvider>(context, listen: false).updateSound(globals.soundEnabled);
+  } else {
+    // Handle the case when the value is null or not of type bool
+    setState(() {
+      globals.soundEnabled = true; // Set a fallback value
+    });
+
+    // Update the sound option in the provider
+    Provider.of<BackgroundProvider>(context, listen: false).updateSound(globals.soundEnabled);
+  }
+}
 
   Widget buildTabContent(int index) {
   switch (index) {

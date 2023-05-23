@@ -897,7 +897,7 @@ class _HomeTabState extends State<HomeTab> {
                             Padding(
                               padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.02),
                               child: Container(
-                                padding: const EdgeInsets.only(top: 5, right: 10),
+                                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.05, right: MediaQuery.of(context).size.height * 0.1),
                                 child: Row(
                                   children: [
                                     RichText(
@@ -915,7 +915,11 @@ class _HomeTabState extends State<HomeTab> {
                                                 ),
                                             ),
                                           child: Padding(
-                                          padding: const EdgeInsets.only(left: 12, right: 12, top: 5, bottom: 2),
+                                          padding: EdgeInsets.only(
+                                            left: MediaQuery.of(context).size.height * 0.12,
+                                            right: MediaQuery.of(context).size.height * 0.12,
+                                             top: MediaQuery.of(context).size.height * 0.05,
+                                              bottom: MediaQuery.of(context).size.height * 0.02),
                                             child: Row(
                                               children: [
                                                 Icon(
@@ -923,13 +927,13 @@ class _HomeTabState extends State<HomeTab> {
                                                   size: MediaQuery.of(context).size.width * 0.07,
                                                   color: globals.selectedWidgetColor,
                                                 ),
-                                                SizedBox(width: MediaQuery.of(context).size.width * 0.02,),
+                                                SizedBox(width: MediaQuery.of(context).size.width * 0.02),
                                                 Text(
                                                   globals.soundEnabled ? 'On' : 'Off',
                                                   style: TextStyle(
                                                     color: globals.selectedWidgetColor,
                                                     decoration: TextDecoration.none,
-                                                    fontSize: 15,
+                                                    fontSize: MediaQuery.of(context).size.height * 0.15,
                                                   ),
                                                 ),
                                               ],
@@ -942,7 +946,7 @@ class _HomeTabState extends State<HomeTab> {
                                       ],    
                                     ),
                                     ),
-                                    SizedBox(width: MediaQuery.of(context).size.width * 0.225),
+                                    SizedBox(width: MediaQuery.of(context).size.width * 0.2),
                                     RichText(
                                       text: TextSpan(
                                         children: [
@@ -959,14 +963,18 @@ class _HomeTabState extends State<HomeTab> {
                                             ),
                             
                                           child: Padding(
-                                              padding: const EdgeInsets.only(left: 12, right: 12, top: 5, bottom: 2),
+                                              padding: EdgeInsets.only(
+                                            left: MediaQuery.of(context).size.height * 0.12,
+                                            right: MediaQuery.of(context).size.height * 0.12,
+                                             top: MediaQuery.of(context).size.height * 0.05,
+                                              bottom: MediaQuery.of(context).size.height * 0.02),
                                               child: RichText (
                                                 textAlign: TextAlign.center,
                                                 text: TextSpan(
                                                   children: [
                                                     TextSpan(
                                                       text: "PRIMINTUKAS", 
-                                                      style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 2, fontSize: 26, fontWeight: FontWeight.bold, decoration: TextDecoration.none)
+                                                      style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: MediaQuery.of(context).size.width * 0.02, fontSize: MediaQuery.of(context).size.width * 0.26, fontWeight: FontWeight.bold, decoration: TextDecoration.none)
                                                     ),
                                                   ]),)
                                           ),
@@ -1001,14 +1009,18 @@ class _HomeTabState extends State<HomeTab> {
                                           ),
 
                                         child: Padding(
-                                            padding: const EdgeInsets.only(left: 12, right: 12, top: 2, bottom: 2),
+                                            padding: EdgeInsets.only(
+                                              left: MediaQuery.of(context).size.height * 0.12,
+                                            right: MediaQuery.of(context).size.height * 0.12,
+                                             top: MediaQuery.of(context).size.height * 0.05,
+                                              bottom: MediaQuery.of(context).size.height * 0.02),
                                             child: RichText (
                                               textAlign: TextAlign.center,
                                               text: TextSpan(
                                                 children: [
                                                   TextSpan(
                                                     text: "Daugiausiai išleista ", 
-                                                    style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 1.8, fontSize: 18, fontWeight: FontWeight.bold)
+                                                    style: TextStyle(color: globals.selectedWidgetColor, letterSpacing: 1.8, fontSize: MediaQuery.of(context).size.height * 0.18, fontWeight: FontWeight.bold)
                                                   ),
                                                 ]),)
                                         ),
@@ -1037,7 +1049,11 @@ class _HomeTabState extends State<HomeTab> {
                                           color: Colors.black,
                                         ),
                                         child: Padding(
-                                          padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                          padding: EdgeInsets.only(
+                                              left: MediaQuery.of(context).size.height * 0.05,
+                                            right: MediaQuery.of(context).size.height * 0.05,
+                                             top: MediaQuery.of(context).size.height * 0.03,
+                                              bottom: MediaQuery.of(context).size.height * 0.03),
                                           child: RichText (
                                             textAlign: TextAlign.center,
                                             text: TextSpan(
@@ -1069,7 +1085,11 @@ class _HomeTabState extends State<HomeTab> {
                                           color: Colors.black,
                                         ),
                                         child: Padding(
-                                          padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                          padding: EdgeInsets.only(
+                                              left: MediaQuery.of(context).size.height * 0.05,
+                                            right: MediaQuery.of(context).size.height * 0.05,
+                                             top: MediaQuery.of(context).size.height * 0.03,
+                                              bottom: MediaQuery.of(context).size.height * 0.03),
                                           child: RichText (
                                             textAlign: TextAlign.center,
                                             text: const TextSpan(
@@ -1119,7 +1139,11 @@ class _HomeTabState extends State<HomeTab> {
                                                 color: Colors.black,
                                               ),
                                               child: Padding(
-                                                padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                                padding: EdgeInsets.only(
+                                              left: MediaQuery.of(context).size.height * 0.05,
+                                            right: MediaQuery.of(context).size.height * 0.05,
+                                             top: MediaQuery.of(context).size.height * 0.03,
+                                              bottom: MediaQuery.of(context).size.height * 0.03),
                                                 child: RichText (
                                                   textAlign: TextAlign.center,
                                                   text: TextSpan(
@@ -1149,7 +1173,11 @@ class _HomeTabState extends State<HomeTab> {
                                                 color: Colors.black,
                                               ),
                                               child: Padding(
-                                                padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                                padding: EdgeInsets.only(
+                                              left: MediaQuery.of(context).size.height * 0.05,
+                                            right: MediaQuery.of(context).size.height * 0.05,
+                                             top: MediaQuery.of(context).size.height * 0.03,
+                                              bottom: MediaQuery.of(context).size.height * 0.03),
                                                 child: RichText (
                                                   textAlign: TextAlign.center,
                                                   text: const TextSpan(
@@ -1186,7 +1214,11 @@ class _HomeTabState extends State<HomeTab> {
                                                 color: Colors.black,
                                               ),
                                               child: Padding(
-                                                padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                                padding:  EdgeInsets.only(
+                                              left: MediaQuery.of(context).size.height * 0.05,
+                                            right: MediaQuery.of(context).size.height * 0.05,
+                                             top: MediaQuery.of(context).size.height * 0.03,
+                                              bottom: MediaQuery.of(context).size.height * 0.03),
                                                 child: RichText (
                                                   textAlign: TextAlign.center,
                                                   text: TextSpan(
@@ -1216,7 +1248,11 @@ class _HomeTabState extends State<HomeTab> {
                                                 color: Colors.black,
                                               ),
                                               child: Padding(
-                                                padding: const EdgeInsets.only(left: 5, right: 5, top: 3, bottom: 3),
+                                                padding: EdgeInsets.only(
+                                              left: MediaQuery.of(context).size.height * 0.05,
+                                            right: MediaQuery.of(context).size.height * 0.05,
+                                             top: MediaQuery.of(context).size.height * 0.03,
+                                              bottom: MediaQuery.of(context).size.height * 0.03),
                                                 child: RichText (
                                                   textAlign: TextAlign.center,
                                                   text: const TextSpan(
@@ -1268,7 +1304,11 @@ class _HomeTabState extends State<HomeTab> {
                                           ),
 
                                         child: Padding(
-                                            padding: const EdgeInsets.only(left: 12, right: 12, top: 2, bottom: 2),
+                                            padding:  EdgeInsets.only(
+                                              left: MediaQuery.of(context).size.height * 0.12,
+                                            right: MediaQuery.of(context).size.height * 0.12,
+                                             top: MediaQuery.of(context).size.height * 0.02,
+                                              bottom: MediaQuery.of(context).size.height * 0.02),
                                             child: RichText (
                                               textAlign: TextAlign.center,
                                               text: const TextSpan(
